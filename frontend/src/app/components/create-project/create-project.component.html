@@ -1,0 +1,192 @@
+<div class="app-layout-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content-area">
+    <div class="create-project-container">
+      <h1 class="text-3xl font-bold">Créer un nouveau projet</h1>
+      <p class="subtitle text-muted-foreground mt-2">Remplissez le formulaire ci-dessous pour créer un nouveau projet et lui assigner un chef.</p>
+
+      <div class="content-wrapper grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div class="form-section lg:col-span-2">
+          <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Informations du projet</h2>
+                <p class="card-description">Entrez les informations de base pour votre nouveau projet.</p>
+              </div>
+              <div class="card-content space-y-4">
+                <div class="tabs w-full">
+                  <div class="tabs-list grid w-full grid-cols-2">
+                    <button class="tab-button" [class.active]="selectedTab === 'informations'" (click)="onTabChange('informations')">Informations</button>
+                    <button class="tab-button" [class.active]="selectedTab === 'details'" (click)="onTabChange('details')">Détails</button>
+                  </div>
+                  <div class="tabs-content space-y-4 pt-4" *ngIf="selectedTab === 'informations'">
+                    <div class="form-group">
+                      <label for="projectName">Nom du projet</label>
+                      <input type="text" id="projectName" formControlName="name" placeholder="Entrez le nom du projet">
+                      <small class="form-description">Le nom doit être unique et descriptif.</small>
+                      <small *ngIf="projectForm.get('name')?.invalid && projectForm.get('name')?.touched" class="form-message text-danger">Le nom du projet doit contenir au moins 3 caractères.</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="projectDescription">Description</label>
+                      <textarea id="projectDescription" formControlName="description" placeholder="Décrivez l'objectif et la portée du projet" class="min-h-[120px]"></textarea>
+                      <small *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched" class="form-message text-danger">La description doit contenir au moins 10 caractères.</small>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div class="form-group flex flex-col">
+                        <label for="startDate">Date de début</label>
+                        <div class="date-input-wrapper">
+                          <i class="fas fa-calendar-alt"></i>
+                          <input type="date" id="startDate" formControlName="startDate">
+                        </div>
+                        <small *ngIf="projectForm.get('startDate')?.invalid && projectForm.get('startDate')?.touched" class="form-message text-danger">Une date de début est requise.</small>
+                      </div>
+
+                      <div class="form-group flex flex-col">
+                        <label for="endDate">Date de fin (optionnelle)</label>
+                        <div class="date-input-wrapper">
+                          <i class="fas fa-calendar-alt"></i>
+                          <input type="date" id="endDate" formControlName="endDate">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tabs-content space-y-4 pt-4" *ngIf="selectedTab === 'details'">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div class="form-group">
+                        <label for="status">Statut</label>
+                        <select id="status" formControlName="status">
+                          <option value="non-commence">Non commencé</option>
+                          <option value="en-cours">En cours</option>
+                          <option value="en-attente">En attente</option>
+                          <option value="termine">Terminé</option>
+                        </select>
+                        <small *ngIf="projectForm.get('status')?.invalid && projectForm.get('status')?.touched" class="form-message text-danger">Veuillez sélectionner un statut.</small>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="priority">Priorité</label>
+                        <select id="priority" formControlName="priority">
+                          <option value="">Sélectionner une priorité</option>
+                          <option value="basse">Basse</option>
+                          <option value="moyenne">Moyenne</option>
+                          <option value="haute">Haute</option>
+                          <option value="urgente">Urgente</option>
+                        </select>
+                        <small *ngIf="projectForm.get('priority')?.invalid && projectForm.get('priority')?.touched" class="form-message text-danger">Veuillez sélectionner une priorité.</small>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div class="form-group">
+                        <label for="budget">Budget (€)</label>
+                        <input type="number" id="budget" formControlName="budget" placeholder="Budget estimé">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="category">Catégorie</label>
+                        <select id="category" formControlName="category">
+                          <option value="">Sélectionner une catégorie</option>
+                          <option value="developpement">Développement</option>
+                          <option value="design">Design</option>
+                          <option value="marketing">Marketing</option>
+                          <option value="operations">Opérations</option>
+                          <option value="autre">Autre</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Chef de projet</h2>
+                <p class="card-description">Sélectionnez un chef pour gérer ce projet.</p>
+              </div>
+              <div class="card-content">
+                <div class="form-group flex flex-col">
+                  <label for="managerId">Chef de projet</label>
+                  <select id="managerId" formControlName="managerId">
+                    <option value="">Sélectionner un chef de projet</option>
+                    <option *ngFor="let manager of projectManagers" [value]="manager.id">
+                      {{ manager.name }} ({{ manager.role }})
+                    </option>
+                  </select>
+                  <small *ngIf="projectForm.get('managerId')?.invalid && projectForm.get('managerId')?.touched" class="form-message text-danger">Veuillez sélectionner un chef de projet.</small>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button type="submit" class="create-button ml-auto" [disabled]="projectForm.invalid || isSubmitting">
+                  <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>
+                  {{ isSubmitting ? 'Création en cours...' : 'Créer le projet' }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="side-panel lg:col-span-1">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Chefs de projet disponibles</h2>
+              <p class="card-description">Consultez la liste des chefs de projet et leur disponibilité.</p>
+            </div>
+            <div class="card-content space-y-4">
+              <div *ngFor="let manager of projectManagers" class="pm-item flex items-start space-x-4 rounded-md border p-3">
+                <div class="pm-avatar">{{ manager.name.charAt(0) }}</div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium">{{ manager.name }}</p>
+                    <span class="status"
+                      [ngClass]="{
+                        'available': manager.availability === 'Disponible',
+                        'partially-available': manager.availability === 'Partiellement disponible',
+                        'occupied': manager.availability === 'Occupé'
+                      }">
+                      <i *ngIf="manager.availability === 'Disponible'" class="fas fa-check-circle mr-1"></i>
+                      <i *ngIf="manager.availability === 'Occupé'" class="fas fa-times-circle mr-1"></i>
+                      <i *ngIf="manager.availability === 'Partiellement disponible'" class="fas fa-hourglass-half mr-1"></i>
+                      {{ manager.availability }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-muted-foreground">{{ manager.role }}</p>
+                  <p class="text-xs text-muted-foreground">{{ manager.department }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-6">
+            <div class="card-header">
+              <h2 class="card-title flex items-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                Conseils
+              </h2>
+            </div>
+            <div class="card-content space-y-2 text-sm">
+              <p>
+                <strong>Choisissez le bon chef de projet</strong> - Assurez-vous que le chef de projet a l'expertise
+                nécessaire pour le type de projet que vous créez.
+              </p>
+              <div class="separator my-2"></div>
+              <p>
+                <strong>Définissez clairement les objectifs</strong> - Une description claire aide l'équipe à comprendre
+                la vision du projet.
+              </p>
+              <div class="separator my-2"></div>
+              <p>
+                <strong>Établissez un calendrier réaliste</strong> - Prévoyez suffisamment de temps pour chaque phase du
+                projet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

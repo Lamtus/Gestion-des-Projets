@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "name": "Auth API Tests",
+  "tests": [
+    {
+      "name": "Register New Member",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/api/auth/register",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "nom": "Doe",
+          "prenom": "John",
+          "email": "john.doe@example.com",
+          "password": "Password123!",
+          "telephone": "0123456789",
+          "poste": "Développeur",
+          "departement": "IT",
+          "role": "MEMBRE_EQUIPE"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "token": "{{notEmpty}}",
+          "message": "Inscription réussie"
+        }
+      }
+    },
+    {
+      "name": "Register Existing Member",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/api/auth/register",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "nom": "Doe",
+          "prenom": "John",
+          "email": "john.doe@example.com",
+          "password": "Password123!",
+          "telephone": "0123456789",
+          "poste": "Développeur",
+          "departement": "IT",
+          "role": "MEMBRE_EQUIPE"
+        }
+      },
+      "expectedResponse": {
+        "status": 400,
+        "body": {
+          "message": "L'email est déjà utilisé"
+        }
+      }
+    },
+    {
+      "name": "Login Member",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:8080/api/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "john.doe@example.com",
+          "password": "Password123!"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "body": {
+          "token": "{{notEmpty}}",
+          "message": "Connexion réussie"
+        }
+      }
+    }
+  ]
+} 

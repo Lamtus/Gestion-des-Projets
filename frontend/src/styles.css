@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Vos styles personnalisés peuvent être ajoutés ici */
+
+/* Global styles for a modern look */
+body {
+  font-family: 'Roboto', sans-serif; /* Or another modern font */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-layout-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f2f5;
+}
+
+.main-content-area {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #f8f8f8;
+  overflow-y: auto;
+  margin-left: 250px; /* Offset for the fixed sidebar width */
+}
+
+@media (max-width: 1024px) {
+  .main-content-area {
+    margin-left: 0; /* Remove offset on smaller screens */
+    padding-left: 20px; /* Add padding for content */
+  }
+}
+
+/* You can add global styles to this file, and also import other style files */

@@ -1,0 +1,392 @@
+/* Styles for DashboardComponent specific elements */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-left i {
+  font-size: 24px;
+  color: #555;
+  margin-right: 15px;
+}
+
+.header-left h2 {
+  font-size: 22px;
+  color: #333;
+  margin: 0;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.projects-header h3 {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+.projects-header p {
+  font-size: 16px;
+  color: #777;
+  margin: 0;
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+.new-project-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.new-project-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.project-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card-header h4 {
+  font-size: 1.2em;
+  color: #333;
+  margin: 0;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.status i {
+  margin-right: 5px;
+}
+
+.status.en-cours {
+  background-color: #e0f2f7;
+  color: #007bff;
+}
+
+.status.non-commence {
+  background-color: #f0f0f0; /* Light grey background */
+  color: #555555; /* Darker grey text */
+}
+
+.status.terminé {
+  background-color: #d4edda;
+  color: #28a745;
+}
+
+.status.en-attente {
+  background-color: #fff3cd;
+  color: #ffc107;
+}
+
+.status.annulé {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.description {
+  font-size: 0.95em;
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.project-chef {
+  display: flex;
+  align-items: center;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.project-chef i {
+  margin-right: 8px;
+  color: #007bff;
+}
+
+.loading-indicator,
+.no-projects-message {
+  text-align: center;
+  padding: 50px;
+  color: #777;
+  font-size: 1.1em;
+}
+
+.loading-indicator i {
+  margin-right: 10px;
+  font-size: 1.5em;
+  color: #007bff;
+}
+
+.no-projects-message .no-projects-icon {
+  font-size: 4em;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.no-projects-message p {
+  margin-top: 10px;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .projects-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .projects-header p {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .new-project-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .project-cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+.logo span {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.logo p {
+  font-size: 14px;
+  color: #777;
+  margin-top: 5px;
+}
+
+.navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.navigation li {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navigation li:hover {
+  background-color: #e6f2ff;
+  color: #007bff;
+}
+
+.navigation li.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.navigation li i {
+  margin-right: 15px;
+  font-size: 18px;
+}
+
+.navigation li.active i {
+  color: white;
+}
+
+.logout-btn {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.logout-btn:hover {
+  background-color: #fcebeb;
+  color: #dc3545;
+}
+
+.logout-btn i {
+  color: #dc3545;
+}
+
+.logout-btn:hover i {
+  color: #dc3545;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-top: 1px solid #eee;
+  margin-top: auto;
+  color: #555;
+}
+
+.user-info i {
+  margin-right: 15px;
+  font-size: 24px;
+  color: #007bff;
+}
+
+.unauthorized-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background-color: #f0f2f5;
+  padding: 20px;
+}
+
+.unauthorized-message h1 {
+  font-size: 32px;
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.unauthorized-message p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.unauthorized-message .btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.unauthorized-message .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Basic responsive adjustments */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    box-shadow: none;
+    position: relative;
+  }
+
+  .navigation ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navigation li {
+    flex-direction: column;
+    font-size: 12px;
+    width: auto;
+    margin: 5px;
+    padding: 8px;
+  }
+
+  .navigation li i {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+
+  .user-info {
+    display: none; /* Hide user info on very small screens */
+  }
+
+  .header {
+    padding: 15px;
+  }
+
+  .header-left i {
+    font-size: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 16px;
+  }
+} 
