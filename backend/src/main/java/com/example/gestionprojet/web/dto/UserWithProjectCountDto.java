@@ -18,4 +18,6 @@ public class UserWithProjectCountDto {
     private String departement;
     private Role role;
     private int numberOfProjectsLed;
+    private int charge;
+    private String availability;
 } 

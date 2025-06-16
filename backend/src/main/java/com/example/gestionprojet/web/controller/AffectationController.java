@@ -19,7 +19,7 @@ public class AffectationController {
     private final AffectationService affectationService;
 
     @PostMapping("/{idTache}/affectations")
-    @PreAuthorize("hasRole('DIRECTEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR', 'MEMBRE_EQUIPE')")
     public ResponseEntity<?> affecterTache(
             @PathVariable Long idTache,
             @RequestBody AffectationRequest request,

@@ -19,7 +19,7 @@
               <i class="fas fa-filter"></i> Filtrer
             </button>
           </div>
-          <button class="new-task-btn">
+          <button class="new-task-btn" *ngIf="showAddTaskButton" [routerLink]="['/projet', projectId, 'create-tache']">
             <i class="fas fa-plus"></i> Nouvelle Tâche
           </button>
         </div>
@@ -96,6 +96,7 @@
               <th>Progression</th>
               <th>Date de fin</th>
               <th>Assigné à</th>
+              <th>Tags</th>
             </tr>
           </thead>
           <tbody>
@@ -120,9 +121,25 @@
                   {{ tache.priorite | titlecase }}
                 </span>
               </td>
-              <td>{{ tache.progression || 0 }}%</td>
+              <td>
+                <div class="task-progress-bar-container">
+                  <div class="task-progress-bar" [style.width.%]="tache.progression || 0"></div>
+                </div>
+              </td>
               <td>{{ tache.dateFin | date:'yyyy-MM-dd' }}</td>
-              <td>{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</td>
+              <td>
+                <div class="task-assignee-list">
+                  <div class="assignee-avatar-list">
+                    {{ tache.assigne?.prenom?.charAt(0) }}{{ tache.assigne?.nom?.charAt(0) }}
+                  </div>
+                  <span class="assignee-name-list">{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="task-tags">
+                  <span *ngFor="let tag of tache.tags" class="task-tag">{{ tag }}</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>

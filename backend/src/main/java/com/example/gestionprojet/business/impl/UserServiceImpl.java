@@ -34,6 +34,15 @@ public class UserServiceImpl implements UserService {
             List<Chef> chefsProjects = chefRepository.findByChef(user);
             int numberOfProjectsLed = (chefsProjects != null) ? chefsProjects.size() : 0;
 
+            // Simple logic for charge and availability for now
+            int charge = Math.min(numberOfProjectsLed * 20, 100); // 20% charge per project, max 100%
+            String availability = "Disponible";
+            if (charge >= 90) {
+                availability = "Occupé";
+            } else if (charge >= 70) {
+                availability = "Partiellement disponible";
+            }
+
             return UserWithProjectCountDto.builder()
                     .id(user.getId())
                     .nom(user.getNom())
@@ -42,6 +51,8 @@ public class UserServiceImpl implements UserService {
                     .departement(user.getDepartement())
                     .role(user.getRole())
                     .numberOfProjectsLed(numberOfProjectsLed)
+                    .charge(charge)
+                    .availability(availability)
                     .build();
         })
         .filter(dto -> dto != null)

@@ -15,4 +15,5 @@ public interface ProjetService {
     Projet updateProjet(Long idProjet, UpdateProjetRequest request, User user);
     Projet changeChefProjet(Long idProjet, ChangeChefProjetRequest request, User user);
     List<ProjetResponse> getProjetsByDirecteur(User directeur);
+    List<ProjetResponse> getProjetsByChefId(Long chefId);
 }

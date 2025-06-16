@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
   isDirecteur: boolean = false;
   isLoading: boolean = true; // Initialize to true to show loading on component init
+  public Role = Role; // Expose Role enum to the template
 
   constructor(
     private authService: AuthService,
@@ -27,18 +28,25 @@ export class DashboardComponent implements OnInit {
   }
 
   checkUserRoleAndLoadProjects(): void {
-    console.log(this.authService.getUserDetailsFromToken());
     this.currentUser = this.authService.getUserDetailsFromToken();
-    if (this.currentUser && this.currentUser.role === Role.DIRECTEUR) {
-      this.isDirecteur = true;
-      this.loadProjects();
+    if (this.currentUser) {
+      if (this.currentUser.role === Role.DIRECTEUR) {
+        this.isDirecteur = true;
+        this.loadProjectsForDirecteur();
+      } else if (this.currentUser.role === Role.MEMBRE_EQUIPE) {
+        this.isDirecteur = false; // Membre_Equipe is not a director
+        this.loadProjectsForMembre();
+      } else {
+        this.router.navigate(['/404']); // Redirect if unknown role or not allowed
+        this.isLoading = false;
+      }
     } else {
-      this.router.navigate(['/404']); // Redirect if not a director
-      this.isLoading = false; // Set loading to false if not a director
+      this.router.navigate(['/login']); // Redirect if no user is logged in
+      this.isLoading = false;
     }
   }
 
-  loadProjects(): void {
+  loadProjectsForDirecteur(): void {
     this.isLoading = true; // Set loading to true before fetching
     this.projetService.getProjetsByDirecteur().subscribe(
       (data: Projet[]) => {
@@ -50,11 +58,33 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false; // Set loading to false on success
       },
       (error: any) => {
-        console.error('Error fetching projects', error);
+        console.error('Error fetching projects for director', error);
         this.isLoading = false; // Set loading to false on error
         // Handle error, e.g., show error message
       }
     );
+  }
+
+  loadProjectsForMembre(): void {
+    this.isLoading = true; // Set loading to true before fetching
+    if (this.currentUser?.id) {
+        this.projetService.getProjetsByChefId(this.currentUser.id).subscribe(
+            (data: Projet[]) => {
+                this.projets = data;
+                this.projets.forEach(projet => {
+                    console.log(`Projet (Membre): ${projet.titre}, Statut: ${projet.statut}`);
+                });
+                this.isLoading = false;
+            },
+            (error: any) => {
+                console.error('Error fetching projects for member', error);
+                this.isLoading = false;
+            }
+        );
+    } else {
+        console.warn('No current user ID found for loading member projects.');
+        this.isLoading = false;
+    }
   }
 
   createNewProject(): void {

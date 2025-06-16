@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Data
 @Entity
+@Table(name = "taches")
 public class Tache {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +21,7 @@ public class Tache {
     private Date dateFin;
     private String statut;
     private Integer progression;
+    private String priorite;
 
     @ManyToOne
     @JoinColumn(name = "id_projet")
@@ -30,4 +34,13 @@ public class Tache {
         inverseJoinColumns = @JoinColumn(name = "id_predecesseur")
     )
     private Set<Tache> predecesseurs;
+
+    @ManyToOne
+    @JoinColumn(name = "id_assigne")
+    private User assigne;
+
+    @ElementCollection
+    @CollectionTable(name = "tache_tags", joinColumns = @JoinColumn(name = "tache_id"))
+    @Column(name = "tag_name")
+    private List<String> tags = new ArrayList<>();
 } 

@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,6 +13,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { CreateProjectComponent } from './components/create-project/create-project.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TaskDashboardComponent } from './components/task-dashboard/task-dashboard.component';
+import { CreateTacheComponent } from './components/create-tache/create-tache.component';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscore-with-space.pipe';
 
@@ -19,17 +22,21 @@ import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscor
     AppComponent,
     LoginComponent,
     DashboardComponent,
+    SidebarComponent,
     NotFoundComponent,
     CreateProjectComponent,
-    SidebarComponent,
     TaskDashboardComponent,
+    CreateTacheComponent,
     ReplaceUnderscoreWithSpacePipe
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    DragDropModule,
+    RouterModule
   ],
   providers: [
     {

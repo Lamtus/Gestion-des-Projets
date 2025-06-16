@@ -20,6 +20,7 @@ import com.example.gestionprojet.web.dto.ProjetResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.gestionprojet.dao.model.Chef;
 
 @Service
 @RequiredArgsConstructor
@@ -141,19 +142,35 @@ public class ProjetServiceImpl implements ProjetService {
     @Override
     public List<ProjetResponse> getProjetsByDirecteur(User directeur) {
         List<Projet> projets = projetsRepository.findByDirecteur(directeur);
-        return projets.stream().map(projet -> {
-            User chefProjet = chefRepository.findByProjet(projet).map(chef -> chef.getChef()).orElse(null);
-            return ProjetResponse.builder()
-                    .idProjet(projet.getIdProjet())
-                    .titre(projet.getTitre())
-                    .description(projet.getDescription())
-                    .statut(projet.getStatut())
-                    .dateDebut(projet.getDateDebut())
-                    .dateFin(projet.getDateFin())
-                    .directeur(projet.getDirecteur())
-                    .chefProjet(chefProjet)
-                    .build();
-        }).collect(Collectors.toList());
+        return projets.stream()
+                .map(this::mapToProjetResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjetResponse> getProjetsByChefId(Long chefId) {
+        User chef = userRepository.findById(chefId)
+                .orElseThrow(() -> new BusinessException("Chef de projet non trouvé"));
+        List<Chef> chefAssignments = chefRepository.findByChef(chef);
+        List<Projet> projets = chefAssignments.stream()
+                .map(Chef::getProjet)
+                .collect(Collectors.toList());
+        return projets.stream()
+                .map(this::mapToProjetResponse)
+                .collect(Collectors.toList());
+    }
+
+    private ProjetResponse mapToProjetResponse(Projet projet) {
+        return ProjetResponse.builder()
+                .idProjet(projet.getIdProjet())
+                .titre(projet.getTitre())
+                .description(projet.getDescription())
+                .statut(projet.getStatut())
+                .dateDebut(projet.getDateDebut())
+                .dateFin(projet.getDateFin())
+                .directeur(projet.getDirecteur())
+                .chefProjet(chefRepository.findByProjet(projet).map(Chef::getChef).orElse(null))
+                .build();
     }
 
     // @Override

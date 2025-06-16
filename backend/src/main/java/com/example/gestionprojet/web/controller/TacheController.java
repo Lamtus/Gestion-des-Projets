@@ -7,6 +7,7 @@ import com.example.gestionprojet.web.dto.CreateTacheRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheStatutRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheProgressionRequest;
+import com.example.gestionprojet.web.dto.TacheResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,8 +24,8 @@ public class TacheController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('DIRECTEUR', 'MEMBRE_EQUIPE')")
-    public ResponseEntity<List<Tache>> getTachesByProjet(@PathVariable Long idProjet) {
-        List<Tache> taches = tacheService.getTachesByProjet(idProjet);
+    public ResponseEntity<List<TacheResponseDto>> getTachesByProjet(@PathVariable Long idProjet) {
+        List<TacheResponseDto> taches = tacheService.getTachesByProjet(idProjet);
         return ResponseEntity.ok(taches);
     }
 

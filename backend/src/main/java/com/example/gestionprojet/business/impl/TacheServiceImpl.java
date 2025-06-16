@@ -13,11 +13,13 @@ import com.example.gestionprojet.dao.repository.ChefRepository;
 import com.example.gestionprojet.dao.repository.ProjetsRepository;
 import com.example.gestionprojet.dao.repository.TacheLogRepository;
 import com.example.gestionprojet.dao.repository.TacheRepository;
+import com.example.gestionprojet.dao.repository.UserRepository;
 import com.example.gestionprojet.exception.BusinessException;
 import com.example.gestionprojet.web.dto.CreateTacheRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheStatutRequest;
 import com.example.gestionprojet.web.dto.UpdateTacheProgressionRequest;
+import com.example.gestionprojet.web.dto.TacheResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +34,21 @@ public class TacheServiceImpl implements TacheService {
     private final ProjetsRepository projetRepository;
     private final ChefRepository chefRepository;
     private final AffectationRepository affectationRepository;
-    private final TacheLogRepository tacheLogRepository;
     private final TacheLogService tacheLogService;
+    private final UserRepository userRepository;
 
     @Override
-    public List<Tache> getTachesByProjet(Long idProjet) {
+    public List<TacheResponseDto> getTachesByProjet(Long idProjet) {
         Projet projet = projetRepository.findById(idProjet)
             .orElseThrow(() -> new BusinessException("Projet non trouvé"));
-        return tacheRepository.findByProjet(projet);
+        List<Tache> taches = tacheRepository.findByProjet(projet);
+        
+        return taches.stream().map(tache -> {
+            User assigne = affectationRepository.findByTache(tache)
+                                              .map(Affectation::getMembre)
+                                              .orElse(null);
+            return TacheResponseDto.fromEntity(tache, assigne);
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -64,7 +73,14 @@ public class TacheServiceImpl implements TacheService {
         tache.setDateDebut(request.getDateDebut());
         tache.setDateFin(request.getDateFin());
         tache.setStatut(request.getStatut());
+        tache.setProgression(request.getProgression());
+        tache.setPriorite(request.getPriorite());
         tache.setProjet(projet);
+
+        // Gérer les tags
+        if (request.getTags() != null && !request.getTags().isEmpty()) {
+            tache.setTags(request.getTags());
+        }
 
         // Gérer les tâches prédécesseurs
         if (request.getPredecesseursIds() != null && !request.getPredecesseursIds().isEmpty()) {
@@ -85,6 +101,17 @@ public class TacheServiceImpl implements TacheService {
         }
 
         tache = tacheRepository.save(tache);
+
+        // Si une affectation est fournie dans la requête, l'enregistrer
+        if (request.getAssigneId() != null) {
+            User assignedUser = userRepository.findById(request.getAssigneId())
+                .orElseThrow(() -> new RuntimeException("Membre assigné non trouvé"));
+            Affectation affectation = new Affectation();
+            affectation.setTache(tache);
+            affectation.setMembre(assignedUser);
+            affectation.setProjet(projet);
+            affectationRepository.save(affectation);
+        }
         tacheLogService.createLog(tache.getIdTache(), "Tâche créée");
         return tache;
     }
@@ -92,77 +119,87 @@ public class TacheServiceImpl implements TacheService {
     @Override
     @Transactional
     public Tache updateTache(Long idTache, UpdateTacheRequest request, User user) {
-        // Vérifier si la tâche existe
         Tache tache = tacheRepository.findById(idTache)
-            .orElseThrow(() -> new RuntimeException("Tâche non trouvée"));
+            .orElseThrow(() -> new BusinessException("Tâche non trouvée"));
 
-        // Vérifier si l'utilisateur est le chef du projet
+        // Vérifier si l'utilisateur est le chef du projet ou le membre assigné
         Projet projet = tache.getProjet();
         Chef chefProjet = chefRepository.findByProjet(projet)
             .orElseThrow(() -> new RuntimeException("Aucun chef n'est assigné à ce projet"));
 
-        if (!chefProjet.getChef().getId().equals(user.getId())) {
-            throw new RuntimeException("Vous n'êtes pas le chef de ce projet");
+        boolean isChef = chefProjet.getChef().getId().equals(user.getId());
+        boolean isAssignedMember = affectationRepository.findByTacheAndMembre(tache, user).isPresent();
+
+        if (!isChef && !isAssignedMember) {
+            throw new RuntimeException("Vous n'êtes pas autorisé à modifier cette tâche");
         }
 
-        // Mise à jour des champs
         tache.setTitre(request.getTitre());
         tache.setDescription(request.getDescription());
         tache.setDateDebut(request.getDateDebut());
         tache.setDateFin(request.getDateFin());
         tache.setStatut(request.getStatut());
+        tache.setPriorite(request.getPriorite());
 
-        tache = tacheRepository.save(tache);
-        tacheLogService.createLog(idTache, "Tâche mise à jour");
-        return tache;
+        // Gérer les tags
+        if (request.getTags() != null) {
+            tache.setTags(request.getTags());
+        }
+
+        if (request.getPredecesseursIds() != null) {
+            Set<Tache> predecesseurs = request.getPredecesseursIds().stream()
+                .map(id -> tacheRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Tâche prédécesseur non trouvée: " + id)))
+                .collect(Collectors.toSet());
+            tache.setPredecesseurs(predecesseurs);
+        }
+
+        tacheLogService.createLog(tache.getIdTache(), "Tâche mise à jour");
+        return tacheRepository.save(tache);
     }
 
     @Override
     @Transactional
     public Tache updateTacheStatut(Long idTache, UpdateTacheStatutRequest request, User user) {
-        // Vérifier si la tâche existe
         Tache tache = tacheRepository.findById(idTache)
-            .orElseThrow(() -> new RuntimeException("Tâche non trouvée"));
+            .orElseThrow(() -> new BusinessException("Tâche non trouvée"));
+        
+        Projet projet = tache.getProjet();
+        Chef chefProjet = chefRepository.findByProjet(projet)
+            .orElseThrow(() -> new RuntimeException("Aucun chef n'est assigné à ce projet"));
 
-        // Vérifier si l'utilisateur est affecté à cette tâche
-        Affectation affectation = affectationRepository.findByTacheAndMembre(tache, user)
-            .orElseThrow(() -> new RuntimeException("Vous n'êtes pas affecté à cette tâche"));
+        boolean isChef = chefProjet.getChef().getId().equals(user.getId());
+        boolean isAssignedMember = affectationRepository.findByTacheAndMembre(tache, user).isPresent();
 
-        // Mise à jour du statut
+        if (!isChef && !isAssignedMember) {
+            throw new RuntimeException("Vous n'êtes pas autorisé à modifier le statut de cette tâche");
+        }
+
         tache.setStatut(request.getStatut());
-
-        tache = tacheRepository.save(tache);
-        tacheLogService.createLog(idTache, "Statut de la tâche mis à jour : " + request.getStatut());
-        return tache;
+        tacheLogService.createLog(tache.getIdTache(), "Statut de la tâche mis à jour: " + request.getStatut());
+        return tacheRepository.save(tache);
     }
 
     @Override
     @Transactional
     public Tache updateTacheProgression(Long idTache, UpdateTacheProgressionRequest request, User user) {
-        // Vérifier si la tâche existe
         Tache tache = tacheRepository.findById(idTache)
-            .orElseThrow(() -> new RuntimeException("Tâche non trouvée"));
+            .orElseThrow(() -> new BusinessException("Tâche non trouvée"));
 
-        // Vérifier si l'utilisateur est affecté à cette tâche
-        Affectation affectation = affectationRepository.findByTacheAndMembre(tache, user)
-            .orElseThrow(() -> new RuntimeException("Vous n'êtes pas affecté à cette tâche"));
+        Projet projet = tache.getProjet();
+        Chef chefProjet = chefRepository.findByProjet(projet)
+            .orElseThrow(() -> new RuntimeException("Aucun chef n'est assigné à ce projet"));
 
-        // Vérifier que la progression est entre 0 et 100
-        if (request.getProgression() < 0 || request.getProgression() > 100) {
-            throw new RuntimeException("La progression doit être comprise entre 0 et 100");
+        boolean isChef = chefProjet.getChef().getId().equals(user.getId());
+        boolean isAssignedMember = affectationRepository.findByTacheAndMembre(tache, user).isPresent();
+
+        if (!isChef && !isAssignedMember) {
+            throw new RuntimeException("Vous n'êtes pas autorisé à modifier la progression de cette tâche");
         }
 
-        // Mise à jour de la progression
         tache.setProgression(request.getProgression());
-
-        // Si la progression atteint 100%, mettre le statut à TERMINE
-        if (request.getProgression() == 100) {
-            tache.setStatut("TERMINE");
-        }
-
-        tache = tacheRepository.save(tache);
-        tacheLogService.createLog(idTache, "Progression de la tâche mise à jour : " + request.getProgression() + "%");
-        return tache;
+        tacheLogService.createLog(tache.getIdTache(), "Progression de la tâche mise à jour: " + request.getProgression() + "%");
+        return tacheRepository.save(tache);
     }
 
     // @Override

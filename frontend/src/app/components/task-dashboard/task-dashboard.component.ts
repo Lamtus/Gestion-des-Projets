@@ -4,6 +4,8 @@ import { TacheService } from '../../services/tache.service';
 import { ProjetService } from '../../services/projet.service';
 import { Tache } from '../../shared/tache.model';
 import { Projet } from '../../shared/projet.model';
+import { AuthService } from '../../services/auth.service';
+import { User, Role } from '../../shared/user.model';
 
 @Component({
   selector: 'app-task-dashboard',
@@ -17,10 +19,20 @@ export class TaskDashboardComponent implements OnInit {
   kanbanColumns: any = {};
   isLoading: boolean = true;
   currentView: string = 'kanban'; // 'kanban' or 'list'
+  currentUser: User | null = null;
+  showAddTaskButton: boolean = false;
 
-  constructor(private route: ActivatedRoute, private tacheService: TacheService, private projetService: ProjetService) { }
+  constructor(
+    private route: ActivatedRoute, 
+    private tacheService: TacheService, 
+    private projetService: ProjetService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getUserDetailsFromToken();
+    this.showAddTaskButton = this.currentUser?.role !== Role.DIRECTEUR;
+    
     this.route.paramMap.subscribe(params => {
       const id = params.get('projectId');
       if (id) {
@@ -48,6 +60,7 @@ export class TaskDashboardComponent implements OnInit {
     this.tacheService.getTachesByProjet(projectId).subscribe(
       (data: Tache[]) => {
         this.taches = data;
+        console.log(this.taches);
         this.organizeTasksForKanban();
         this.isLoading = false;
       },

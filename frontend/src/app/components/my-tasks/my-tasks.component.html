@@ -1,0 +1,3 @@
+<div class="my-tasks-container">
+  <h1 class="text-3xl font-bold mb-6">Mes Tâches</h1>
+          </div>              <span [ngClass]="getTaskStatusClass(task.statut)">{{ task.statut.replace('_', ' ') }}</span>              <span [ngClass]="getTaskStatusClass(task.statut)">{{ task.statut | replaceUnderscoreWithSpace }}</span>

@@ -83,4 +83,11 @@ public class ProjetController {
         List<ProjetResponse> projets = projetService.getProjetsByDirecteur(user);
         return ResponseEntity.ok(projets);
     }
+
+    @GetMapping("/chef/{chefId}")
+    @PreAuthorize("hasAnyRole('DIRECTEUR', 'MEMBRE_EQUIPE')")
+    public ResponseEntity<List<ProjetResponse>> getProjetsByChefId(@PathVariable Long chefId) {
+        List<ProjetResponse> projets = projetService.getProjetsByChefId(chefId);
+        return ResponseEntity.ok(projets);
+    }
 }

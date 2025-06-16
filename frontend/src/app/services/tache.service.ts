@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiConfigService } from '../config/api.config';
 import { Tache } from '../shared/tache.model';
 import { AuthService } from './auth.service';
+import { CreateTacheRequest } from '../shared/create-tache-request.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,12 +28,12 @@ export class TacheService {
 
   getTachesByProjet(projetId: number): Observable<Tache[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Tache[]>(`${this.apiConfig.getProjetsUrl()}/${projetId}/taches`, { headers });
+    return this.http.get<Tache[]>(`${this.apiConfig.getBaseUrl()}/projets/${projetId}/taches`, { headers });
   }
 
-  createTache(tache: Tache): Observable<Tache> {
+  createTache(projetId: number, tache: CreateTacheRequest): Observable<Tache> {
     const headers = this.getAuthHeaders();
-    return this.http.post<Tache>(this.apiConfig.getTachesUrl(), tache, { headers });
+    return this.http.post<Tache>(`${this.apiConfig.getBaseUrl()}/projets/${projetId}/taches`, tache, { headers });
   }
 
   updateTache(id: number, tache: Tache): Observable<Tache> {
@@ -55,12 +56,13 @@ export class TacheService {
     return this.http.put<Tache>(`${this.apiConfig.getTachesUrl()}/${id}/status`, { status }, { headers });
   }
 
+  getTachesByAssignee(userId: number): Observable<Tache[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Tache[]>(`${this.apiConfig.getTachesUrl()}/assignee/${userId}`, { headers });
+  }
+
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 } 

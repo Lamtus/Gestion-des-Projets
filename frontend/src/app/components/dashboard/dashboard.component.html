@@ -1,4 +1,4 @@
-<div *ngIf="isDirecteur" class="app-layout-container">
+<div class="app-layout-container">
   <app-sidebar></app-sidebar>
 
   <div class="main-content-area">
@@ -13,7 +13,7 @@
       <div class="projects-header">
         <h3>Mes Projets</h3>
         <p>Gérez et suivez l'avancement de vos projets</p>
-        <button class="new-project-btn" (click)="createNewProject()">
+        <button class="new-project-btn" (click)="createNewProject()" *ngIf="isDirecteur">
           <i class="fas fa-plus"></i> Nouveau Projet
         </button>
       </div>

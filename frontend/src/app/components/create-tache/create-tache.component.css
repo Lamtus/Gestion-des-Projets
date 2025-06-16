@@ -1,0 +1,256 @@
+.create-tache-container {
+  padding: 30px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+}
+
+h1 {
+  font-size: 2.2em;
+  color: #343a40;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #6c757d;
+  font-size: 1.1em;
+  margin-bottom: 30px;
+}
+
+.content-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Two-thirds for form, one-third for side panel */
+  gap: 30px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+}
+
+.card-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 25px;
+}
+
+.card-title {
+  font-size: 1.6em;
+  color: #343a40;
+  margin-bottom: 5px;
+}
+
+.card-description {
+  color: #888;
+  font-size: 0.95em;
+}
+
+.card-content {
+  /* max-height: 400px; */ /* Removed */
+  /* overflow-y: auto; */ /* Removed */
+  /* padding-right: 10px; */ /* Removed */
+}
+
+/* Scrollbar styling for member list */
+.card-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.card-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.card-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.card-footer {
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  margin-top: 25px;
+}
+
+/* Form elements styling */
+label {
+  font-weight: 500;
+}
+
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 0.95em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Specific styles for sections */
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e9ecef;
+}
+
+.member-item:last-child {
+  border-bottom: none;
+}
+
+.member-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: #777;
+  flex-shrink: 0;
+}
+
+.charge-bar-container {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.charge-bar {
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Status indicators */
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status.available {
+  background-color: #d4edda;
+  color: #28a745;
+}
+
+.status.occupied {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.status.partially-available {
+  background-color: #fff3cd;
+  color: #ffc107;
+}
+
+.status.complete {
+  background-color: #d4edda;
+  color: #28a745;
+}
+
+.status.in-progress {
+  background-color: #cce5ff;
+  color: #007bff;
+}
+
+.status.todo {
+  background-color: #f0f0f0;
+  color: #555555;
+}
+
+.status.blocked {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+/* Font Awesome integration (example classes) */
+.fas {
+  margin-right: 8px;
+}
+
+.fa-lightbulb {
+  color: #ffc107;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .content-wrapper {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+}
+
+#antecedent-tasks-content {
+  max-height: 200px; /* Adjust as needed for antecedent tasks list */
+  overflow-y: auto;
+  padding-right: 10px; /* To prevent scrollbar from overlapping content */
+}
+
+#antecedent-tasks-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+#antecedent-tasks-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#antecedent-tasks-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#antecedent-tasks-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+#team-members-content {
+  max-height: 400px; /* Adjust as needed for team members list */
+  overflow-y: auto;
+  padding-right: 10px; /* To prevent scrollbar from overlapping content */
+}
+
+#team-members-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+#team-members-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#team-members-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#team-members-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

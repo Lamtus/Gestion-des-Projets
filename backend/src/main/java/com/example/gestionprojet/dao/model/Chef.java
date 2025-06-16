@@ -8,8 +8,8 @@ import lombok.Data;
 public class Chef {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_chef")
-    private Long idChef;
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_projet")

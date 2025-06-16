@@ -30,6 +30,11 @@ export class ProjetService {
     return this.http.get<Projet[]>(`${this.apiConfig.getProjetsUrl()}/directeur`, { headers });
   }
 
+  getProjetsByChefId(chefId: number): Observable<Projet[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Projet[]>(`${this.apiConfig.getProjetsUrl()}/chef/${chefId}`, { headers });
+  }
+
   createProjet(projet: Projet): Observable<Projet> {
     const headers = this.getAuthHeaders();
     return this.http.post<Projet>(`${this.apiConfig.getProjetsUrl()}/add`, projet, { headers });

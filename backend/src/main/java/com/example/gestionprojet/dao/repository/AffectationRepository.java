@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface AffectationRepository extends JpaRepository<Affectation, Long> {
     List<Affectation> findByMembre(User membre);
     Optional<Affectation> findByTacheAndMembre(Tache tache, User membre);
+    Optional<Affectation> findByTache(Tache tache);
 } 

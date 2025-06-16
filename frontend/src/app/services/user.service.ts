@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiConfigService } from '../config/api.config';
 import { User } from '../shared/user.model';
+import { UserWithProjectCountDto } from '../shared/user-with-project-count.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ export class UserService {
     private apiConfig: ApiConfigService
   ) { }
 
-  getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiConfig.getUsersUrl()}/with-project-count`);
+  getAllUsers(): Observable<UserWithProjectCountDto[]> {
+    return this.http.get<UserWithProjectCountDto[]>(`${this.apiConfig.getUsersUrl()}/with-project-count`);
   }
 
   getUserById(id: number): Observable<User> {

@@ -11,4 +11,5 @@ public interface ChefRepository extends JpaRepository<Chef, Long> {
     void deleteByProjet(Projet projet);
     Optional<Chef> findByProjet(Projet projet);
     List<Chef> findByChef(User chef);
+    Optional<Chef> findByProjet_IdProjet(Long idProjet);
 }
