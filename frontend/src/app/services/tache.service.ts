@@ -51,9 +51,9 @@ export class TacheService {
     return this.http.put<Tache>(`${this.apiConfig.getTachesUrl()}/${id}/assign`, { userId }, { headers });
   }
 
-  updateStatus(id: number, status: string): Observable<Tache> {
+  updateStatus(projectId: number, taskId: number, status: string): Observable<Tache> {
     const headers = this.getAuthHeaders();
-    return this.http.put<Tache>(`${this.apiConfig.getTachesUrl()}/${id}/status`, { status }, { headers });
+    return this.http.patch<Tache>(`${this.apiConfig.getBaseUrl()}/projets/${projectId}/taches/${taskId}/statut`, { statut: status }, { headers });
   }
 
   getTachesByAssignee(userId: number): Observable<Tache[]> {

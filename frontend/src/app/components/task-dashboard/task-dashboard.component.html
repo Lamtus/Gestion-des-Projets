@@ -36,8 +36,12 @@
         <button class="view-list" [class.active]="currentView === 'list'" (click)="toggleView('list')">Vue Liste</button>
       </div>
 
-      <div class="kanban-board" *ngIf="currentView === 'kanban'">
-        <div class="kanban-column" *ngFor="let column of ['À faire', 'En cours', 'Bloqué', 'Terminé']">
+      <div class="kanban-board" *ngIf="currentView === 'kanban'" cdkDropListGroup>
+        <div class="kanban-column" *ngFor="let column of ['À faire', 'En cours', 'Bloqué', 'Terminé']"
+             [id]="column"
+             cdkDropList
+             [cdkDropListData]="kanbanColumns[column]"
+             (cdkDropListDropped)="onTaskDrop($event)">
           <div class="column-header">
             <h2>{{ column }}</h2>
             <span class="task-count">{{ kanbanColumns[column]?.length || 0 }}</span>
@@ -47,7 +51,9 @@
               <i class="fas fa-box-open no-tasks-icon"></i>
               <p>Pas de tâche pour le moment.</p>
             </div>
-            <div class="task-card" *ngFor="let tache of kanbanColumns[column]">
+            <div class="task-card" *ngFor="let tache of kanbanColumns[column]"
+                 cdkDrag
+                 [cdkDragDisabled]="!isProjectManager">
               <div class="card-header">
                 <h3>{{ tache.titre }}</h3>
                 <div class="card-options">

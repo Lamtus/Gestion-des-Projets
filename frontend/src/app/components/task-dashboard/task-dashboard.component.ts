@@ -6,6 +6,7 @@ import { Tache } from '../../shared/tache.model';
 import { Projet } from '../../shared/projet.model';
 import { AuthService } from '../../services/auth.service';
 import { User, Role } from '../../shared/user.model';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-task-dashboard',
@@ -21,6 +22,7 @@ export class TaskDashboardComponent implements OnInit {
   currentView: string = 'kanban'; // 'kanban' or 'list'
   currentUser: User | null = null;
   showAddTaskButton: boolean = false;
+  isProjectManager: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -32,6 +34,7 @@ export class TaskDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getUserDetailsFromToken();
     this.showAddTaskButton = this.currentUser?.role !== Role.DIRECTEUR;
+    this.isProjectManager = this.currentUser?.role === Role.MEMBRE_EQUIPE;
     
     this.route.paramMap.subscribe(params => {
       const id = params.get('projectId');
@@ -102,5 +105,56 @@ export class TaskDashboardComponent implements OnInit {
 
   toggleView(viewName: string): void {
     this.currentView = viewName;
+  }
+
+  onTaskDrop(event: CdkDragDrop<Tache[]>) {
+    if (!this.isProjectManager) return;
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+
+      // Update task status based on the new column
+      const task = event.container.data[event.currentIndex];
+      let newStatus = 'A_FAIRE';
+      
+      switch (event.container.id) {
+        case 'À faire':
+          newStatus = 'A_FAIRE';
+          break;
+        case 'En cours':
+          newStatus = 'EN_COURS';
+          break;
+        case 'Bloqué':
+          newStatus = 'BLOQUE';
+          break;
+        case 'Terminé':
+          newStatus = 'TERMINE';
+          break;
+      }
+      if(task.idTache)
+      // Update task status in the backend
+      this.tacheService.updateStatus(this.projectId, task.idTache, newStatus).subscribe(
+        (updatedTask: Tache) => {
+          console.log('Task status updated successfully:', updatedTask);
+        },
+        (error: any) => {
+          console.error('Error updating task status:', error);
+          // Revert the drag and drop if the update fails
+          transferArrayItem(
+            event.container.data,
+            event.previousContainer.data,
+            event.currentIndex,
+            event.previousIndex,
+          );
+        }
+      );
+    }
   }
 } 
