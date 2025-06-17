@@ -1,3 +1,214 @@
+<div class="app-layout-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content-area">
 <div class="my-tasks-container">
-  <h1 class="text-3xl font-bold mb-6">Mes Tâches</h1>
-          </div>              <span [ngClass]="getTaskStatusClass(task.statut)">{{ task.statut.replace('_', ' ') }}</span>              <span [ngClass]="getTaskStatusClass(task.statut)">{{ task.statut | replaceUnderscoreWithSpace }}</span>
+      <header class="dashboard-header">
+        <div class="header-left">
+          <i class="fas fa-tasks"></i>
+          <h1>Mes Tâches</h1>
+          <p>Gérez vos tâches assignées et suivez votre progression</p>
+        </div>
+        <div class="header-right">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Rechercher une tâche...">
+          </div>
+        </div>
+      </header>
+
+      <div class="tabs-navigation">
+        <button class="tab-button" [class.active]="currentTab === 'apercu'" (click)="selectTab('apercu')">Aperçu</button>
+        <button class="tab-button" [class.active]="currentTab === 'mes-taches'" (click)="selectTab('mes-taches')">Mes Tâches</button>
+        <button class="tab-button" [class.active]="currentTab === 'statistiques'" (click)="selectTab('statistiques')">Statistiques</button>
+      </div>
+
+      <div *ngIf="currentTab === 'apercu'">
+        <div class="summary-cards-grid">
+          <div class="summary-card">
+            <div class="card-icon"><i class="fas fa-tasks"></i></div>
+            <div class="card-content">
+              <p class="card-title">Tâches totales</p>
+              <h2 class="card-value">{{ totalTasks }}</h2>
+              <p class="card-description">Assignées à vous</p>
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="card-content">
+              <p class="card-title">En cours</p>
+              <h2 class="card-value">{{ tasksInProgress.length }}</h2>
+              <p class="card-description">Tâches actives</p>
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="card-content">
+              <p class="card-title">Terminées</p>
+              <h2 class="card-value">{{ completedTasks }}</h2>
+              <p class="card-description">{{ completionRate | number:'1.0-0' }}% de réussite</p>
+            </div>
+          </div>
+          <div class="summary-card late-card">
+            <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="card-content">
+              <p class="card-title">En retard</p>
+              <h2 class="card-value">{{ lateTasks }}</h2>
+              <p class="card-description">Nécessitant attention</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tasks-sections-grid">
+          <div class="task-section">
+            <h3>Tâches en cours</h3>
+            <p class="section-description">Vos tâches actuellement en progression</p>
+            <div class="task-list">
+              <div class="task-item" *ngFor="let task of tasksInProgress">
+                <div class="task-details">
+                  <h4>{{ task.titre }}</h4>
+                  <p class="project-name">{{ task.description }}</p> <!-- Assuming description can be project name or similar short text -->
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" [style.width.%]="task.progression || 0"></div>
+                  </div>
+                  <div class="task-meta">
+                    <span class="priority" [ngClass]="getTaskPriorityClass(task.priorite)">{{ task.priorite }}</span>
+                    <span class="due-date"><i class="fas fa-calendar-alt"></i> {{ task.dateFin | date:'yyyy-MM-dd' }}</span>
+                  </div>
+                </div>
+                <button class="action-button complete" (click)="completeTask(task)"><i class="fas fa-check"></i> Terminer</button>
+              </div>
+              <div *ngIf="tasksInProgress.length === 0" class="no-tasks-message">
+                <i class="fas fa-folder-open no-tasks-icon"></i>
+                <p>Aucune tâche en cours pour le moment.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-section">
+            <h3>Prochaines tâches</h3>
+            <p class="section-description">Tâches à faire par ordre de priorité</p>
+            <div class="task-list">
+              <div class="task-item" *ngFor="let task of upcomingTasks">
+                <div class="task-details">
+                  <h4>{{ task.titre }}</h4>
+                  <p class="project-name">{{ task.description }}</p>
+                  <div class="task-meta">
+                    <span class="priority" [ngClass]="getTaskPriorityClass(task.priorite)">{{ task.priorite }}</span>
+                    <span class="due-date"><i class="fas fa-calendar-alt"></i> {{ task.dateFin | date:'yyyy-MM-dd' }}</span>
+                  </div>
+                </div>
+                <button class="action-button start" (click)="startTask(task)"><i class="fas fa-play"></i> Commencer</button>
+              </div>
+              <div *ngIf="upcomingTasks.length === 0" class="no-tasks-message">
+                <i class="fas fa-box-open no-tasks-icon"></i>
+                <p>Pas de tâches à venir.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentTab === 'mes-taches'" class="my-tasks-list-view">
+        <div *ngIf="myTasks.length === 0" class="no-tasks-message">
+          <i class="fas fa-folder-open no-tasks-icon"></i>
+          <p>Aucune tâche assignée pour le moment.</p>
+          <p class="sub-message">Vos tâches s'afficheront ici une fois assignées.</p>
+        </div>
+
+        <div class="task-card-list">
+          <div class="task-card-item" *ngFor="let task of myTasks">
+            <div class="card-content">
+              <div class="card-header">
+                <h3>{{ task.titre }}</h3>
+                <div class="status-priority-group">
+                  <span class="status" [ngClass]="getTaskStatusClass(task.statut)">{{ task.statut | replaceUnderscoreWithSpace | titlecase }}</span>
+                  <span class="priority" [ngClass]="getTaskPriorityClass(task.priorite)">{{ task.priorite }}</span>
+                </div>
+              </div>
+              <p class="description">{{ task.description }}</p>
+              <div class="meta-info">
+                <span class="project-name"><i class="fas fa-briefcase"></i> {{ task.projet?.titre }}</span>
+                <span class="date-range"><i class="fas fa-calendar-alt"></i> {{ task.dateDebut | date:'yyyy-MM-dd' }} - {{ task.dateFin | date:'yyyy-MM-dd' }}</span>
+                <span class="time-info"><i class="fas fa-clock"></i> {{ task.estimation }}h / {{ task.progression }}h</span>
+              </div>
+              <div class="tags">
+                <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+              </div>
+              <div class="progress-section">
+                <div class="progress-bar-container">
+                  <div class="progress-bar" [style.width.%]="task.progression || 0"></div>
+                </div>
+                <span class="progress-text">Progression {{ task.progression || 0 }}%</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-button start" *ngIf="task.statut === 'A_FAIRE' || task.statut === 'BLOQUE'" (click)="startTask(task)">
+                <i class="fas fa-play"></i> Commencer
+              </button>
+              <button class="action-button complete" *ngIf="task.statut === 'EN_COURS'" (click)="completeTask(task)">
+                <i class="fas fa-check"></i> Terminer
+              </button>
+              <div class="card-options">
+                <i class="fas fa-ellipsis-h"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentTab === 'statistiques'" class="statistics-view">
+        <div class="statistics-grid">
+          <div class="statistic-card">
+            <h3><i class="fas fa-chart-line"></i> Performance</h3>
+            <p class="statistic-label">Taux de complétion</p>
+            <div class="progress-bar-container-lg">
+              <div class="progress-bar-lg" [style.width.%]="completionRate"></div>
+            </div>
+            <div class="completion-summary">
+              <span>{{ completedTasks }} Terminées</span>
+              <span>{{ tasksInProgress.length }} En cours</span>
+            </div>
+          </div>
+
+          <div class="statistic-card">
+            <h3><i class="fas fa-clock"></i> Temps de travail</h3>
+            <div class="time-summary">
+              <div>
+                <p class="statistic-label">Temps passé</p>
+                <h4 class="statistic-value">{{ totalTimeSpent }}h</h4>
+              </div>
+              <div>
+                <p class="statistic-label">Temps estimé</p>
+                <h4 class="statistic-value">{{ totalEstimatedTime }}h</h4>
+              </div>
+            </div>
+            <p class="statistic-label">Efficacité</p>
+            <div class="progress-bar-container-lg">
+              <div class="progress-bar-lg" [style.width.%]="efficiencyRate"></div>
+            </div>
+            <span class="efficiency-text">{{ efficiencyRate | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+
+        <div class="statistic-section">
+          <h3><i class="fas fa-project-diagram"></i> Répartition par projet</h3>
+          <div class="project-distribution-list">
+            <div class="project-distribution-item" *ngFor="let project of projectDistribution | keyvalue">
+              <p class="project-title">{{ project.key }}</p>
+              <div class="progress-bar-container-sm">
+                <div class="progress-bar-sm" [style.width.%]="(project.value.completed / project.value.total) * 100"></div>
+              </div>
+              <span class="project-counts">{{ project.value.completed }}/{{ project.value.total }} tâches ({{ ((project.value.completed / project.value.total) * 100) | number:'1.0-0' }}%)</span>
+            </div>
+            <div *ngIf="(projectDistribution | keyvalue).length === 0" class="no-tasks-message">
+              <i class="fas fa-box-open no-tasks-icon"></i>
+              <p>Aucune tâche répartie par projet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

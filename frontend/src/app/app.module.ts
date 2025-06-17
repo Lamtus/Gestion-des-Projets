@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -14,6 +15,7 @@ import { CreateProjectComponent } from './components/create-project/create-proje
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TaskDashboardComponent } from './components/task-dashboard/task-dashboard.component';
 import { CreateTacheComponent } from './components/create-tache/create-tache.component';
+import { MyTasksComponent } from './components/my-tasks/my-tasks.component';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscore-with-space.pipe';
 
@@ -27,6 +29,7 @@ import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscor
     CreateProjectComponent,
     TaskDashboardComponent,
     CreateTacheComponent,
+    MyTasksComponent,
     ReplaceUnderscoreWithSpacePipe
   ],
   imports: [
@@ -36,7 +39,8 @@ import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscor
     FormsModule,
     ReactiveFormsModule,
     DragDropModule,
-    RouterModule
+    RouterModule,
+    CommonModule
   ],
   providers: [
     {

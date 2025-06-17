@@ -5,6 +5,7 @@ export interface CreateTacheRequest {
     dateFin: Date;
     statut: string;
     progression: number;
+    estimation:number;
     priorite: string;
     predecesseursIds?: number[];
     assigneId?: number;

@@ -51,6 +51,16 @@ export class CreateTacheComponent implements OnInit {
       tachesAntecedentes: this.fb.array([])
     });
 
+    // S'abonner aux changements de l'estimation pour s'assurer qu'elle est un nombre
+    this.tacheForm.get('estimation')?.valueChanges.subscribe(value => {
+      if (value !== null && value !== '') {
+        const numValue = Number(value);
+        if (!isNaN(numValue)) {
+          this.tacheForm.patchValue({ estimation: numValue }, { emitEvent: false });
+        }
+      }
+    });
+
     console.log('Initial form validity:', this.tacheForm.valid);
 
     this.loadAvailableMembers();
@@ -101,11 +111,12 @@ export class CreateTacheComponent implements OnInit {
         dateFin: new Date(formValue.dateEcheance),
         statut: 'A_FAIRE',
         progression: 0,
+        estimation: Number(formValue.estimation),  // Conversion explicite en nombre
         assigneId: formValue.assigneA,
         tags: formValue.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0),
         predecesseursIds: formValue.tachesAntecedentes
       };
-
+      console.log('Nouvelle tâche à créer:', nouvelleTache);  // Log pour déboguer
       this.tacheService.createTache(this.projectId, nouvelleTache).subscribe({
         next: (response) => {
           console.log('Tâche créée avec succès:', response);

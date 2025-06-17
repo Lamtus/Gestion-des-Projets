@@ -75,6 +75,7 @@ public class TacheServiceImpl implements TacheService {
         tache.setStatut(request.getStatut());
         tache.setProgression(request.getProgression());
         tache.setPriorite(request.getPriorite());
+        tache.setEstimation(request.getEstimation());
         tache.setProjet(projet);
 
         // Gérer les tags
@@ -200,6 +201,23 @@ public class TacheServiceImpl implements TacheService {
         tache.setProgression(request.getProgression());
         tacheLogService.createLog(tache.getIdTache(), "Progression de la tâche mise à jour: " + request.getProgression() + "%");
         return tacheRepository.save(tache);
+    }
+
+    @Override
+    public List<TacheResponseDto> getTachesByMembre(Long userId) {
+        User membre = userRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException("Membre non trouvé"));
+        
+        List<Tache> taches = affectationRepository.findByMembre(membre).stream()
+                                                    .map(Affectation::getTache)
+                                                    .collect(Collectors.toList());
+                                                    
+        return taches.stream().map(tache -> {
+            User assigne = affectationRepository.findByTache(tache)
+                                              .map(Affectation::getMembre)
+                                              .orElse(null);
+            return TacheResponseDto.fromEntity(tache, assigne);
+        }).collect(Collectors.toList());
     }
 
     // @Override

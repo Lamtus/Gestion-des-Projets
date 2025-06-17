@@ -26,6 +26,7 @@ public class TacheResponseDto {
     private String statut;
     private Integer progression;
     private String priorite;
+    private Integer estimation;
     private Projet projet;
     private User assigne;
     private Set<Long> predecesseursIds;
@@ -41,6 +42,7 @@ public class TacheResponseDto {
                 .statut(tache.getStatut())
                 .progression(tache.getProgression())
                 .priorite(tache.getPriorite())
+                .estimation(tache.getEstimation())
                 .projet(tache.getProjet())
                 .assigne(assigne)
                 .predecesseursIds(tache.getPredecesseurs() != null ?

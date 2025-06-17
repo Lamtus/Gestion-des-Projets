@@ -22,6 +22,7 @@ public class Tache {
     private String statut;
     private Integer progression;
     private String priorite;
+    private Integer estimation;
 
     @ManyToOne
     @JoinColumn(name = "id_projet")

@@ -14,6 +14,7 @@ public class CreateTacheRequest {
     private String statut;
     private Integer progression;
     private String priorite;
+    private Integer estimation;
     private Set<Long> predecesseursIds;
     private Long assigneId;
     private List<String> tags;

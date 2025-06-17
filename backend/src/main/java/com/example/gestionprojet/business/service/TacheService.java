@@ -16,4 +16,5 @@ public interface TacheService {
     Tache updateTache(Long idTache, UpdateTacheRequest request, User user);
     Tache updateTacheStatut(Long idTache, UpdateTacheStatutRequest request, User user);
     Tache updateTacheProgression(Long idTache, UpdateTacheProgressionRequest request, User user);
+    List<TacheResponseDto> getTachesByMembre(Long userId);
 } 
