@@ -177,8 +177,28 @@ public class TacheServiceImpl implements TacheService {
         }
 
         tache.setStatut(request.getStatut());
+
+        // Si le statut est 'TERMINE', mettre la progression à 100%
+        if ("TERMINE".equals(request.getStatut())) {
+            tache.setProgression(100);
+        }
+
         tacheLogService.createLog(tache.getIdTache(), "Statut de la tâche mis à jour: " + request.getStatut());
-        return tacheRepository.save(tache);
+        Tache savedTache = tacheRepository.save(tache);
+
+        // Vérifier si toutes les tâches du projet sont terminées
+        List<Tache> toutesLesTachesDuProjet = tacheRepository.findByProjet(projet);
+        boolean toutesTachesTerminees = toutesLesTachesDuProjet.stream()
+            .allMatch(t -> "TERMINE".equals(t.getStatut()));
+
+        if (toutesTachesTerminees && !"TERMINE".equals(projet.getStatut())) {
+            projet.setStatut("TERMINE");
+            projetRepository.save(projet);
+            // Optionnel : ajouter un log pour le projet
+            // projetLogService.createLog(projet.getIdProjet(), "Projet marqué comme terminé");
+        }
+
+        return savedTache;
     }
 
     @Override

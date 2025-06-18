@@ -66,9 +66,21 @@ export class MyTasksComponent implements OnInit {
   }
 
   calculateStatistics(): void {
-    this.totalTimeSpent = this.myTasks.reduce((sum, task) => sum + (task.progression || 0), 0);
-    this.totalEstimatedTime = this.myTasks.reduce((sum, task) => sum + (task.estimation || 0), 0);
-    this.efficiencyRate = this.totalEstimatedTime > 0 ? (this.totalTimeSpent / this.totalEstimatedTime) * 100 : 0;
+    // Calculer le temps passé en sommant l'estimation des tâches terminées
+    this.totalTimeSpent = this.myTasks
+      .filter(task => task.statut === 'TERMINE')
+      .reduce((sum, task) => sum + (task.estimation || 0), 0);
+
+    // Calculer le temps estimé restant en sommant l'estimation des tâches non terminées
+    this.totalEstimatedTime = this.myTasks
+      .filter(task => task.statut !== 'TERMINE')
+      .reduce((sum, task) => sum + (task.estimation || 0), 0);
+
+    // Calculer le temps total estimé pour toutes les tâches (pour le calcul de l'efficacité)
+    const overallEstimatedTime = this.myTasks
+      .reduce((sum, task) => sum + (task.estimation || 0), 0);
+
+    this.efficiencyRate = overallEstimatedTime > 0 ? (this.totalTimeSpent / overallEstimatedTime) * 100 : 0;
 
     this.projectDistribution = {};
     this.myTasks.forEach(task => {
