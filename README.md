@@ -358,7 +358,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 **Ahmed Lamti**
 - Email: lamti.ahmeed@gmail.com
-- GitHub: [@votre-username]
+- GitHub: Lamtus
 
 ---
 
