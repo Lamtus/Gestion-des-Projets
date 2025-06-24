@@ -36,7 +36,7 @@ public class RegisterRequest {
     private String password;
 
     @NotBlank(message = "Le numéro de téléphone est obligatoire")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Le numéro de téléphone doit contenir 10 chiffres")
+    @Pattern(regexp = "^[0-9]{8}$", message = "Le numéro de téléphone doit contenir 8 chiffres")
     private String telephone;
 
     @NotBlank(message = "Le poste est obligatoire")
