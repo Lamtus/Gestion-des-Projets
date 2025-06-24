@@ -30,6 +30,7 @@
   <div class="view-toggle">
     <button class="view-kanban" [class.active]="currentView === 'kanban'" (click)="toggleView('kanban')">Vue Kanban</button>
     <button class="view-list" [class.active]="currentView === 'list'" (click)="toggleView('list')">Vue Liste</button>
+    <button class="view-gantt" [class.active]="currentView === 'gantt'" (click)="toggleView('gantt')">Vue Gantt</button>
   </div>
 
   <div class="kanban-board" *ngIf="currentView === 'kanban'" cdkDropListGroup>
@@ -145,5 +146,9 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div *ngIf="currentView === 'gantt'">
+    <div #gantt_here class="gantt-container"></div>
   </div>
 </div> 

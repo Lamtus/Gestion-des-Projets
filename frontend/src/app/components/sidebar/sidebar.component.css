@@ -15,15 +15,29 @@
 }
 
 .logo {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 30px;
   min-height: 110px; /* Reserve space */
 }
 
+.logo-icon-wrapper {
+  background-color: #fff;
+  border-radius: 50%;
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .logo img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 10px;
+  width: 45px;
+  height: 45px;
 }
 
 .logo span {
@@ -140,6 +154,10 @@
 .sidebar.collapsed {
   width: 80px; /* Width when collapsed */
   padding: 20px 10px;
+}
+
+.sidebar.collapsed .logo-icon-wrapper {
+  margin-bottom: 0;
 }
 
 .sidebar.collapsed .logo img {

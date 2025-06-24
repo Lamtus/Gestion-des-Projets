@@ -1,6 +1,8 @@
 <div class="sidebar" [class.collapsed]="isCollapsed$ | async">
   <div class="logo">
-    <img src="../../../assets/logo.png" alt="ProjectHub Logo">
+    <div class="logo-icon-wrapper">
+      <img src="../../../assets/logo.png" alt="ProjectHub Logo">
+    </div>
     <span *ngIf="!(isCollapsed$ | async)">ProjectHub</span>
     <p *ngIf="!(isCollapsed$ | async)">Gestion de projets</p>
   </div>

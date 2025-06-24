@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TacheService } from '../../services/tache.service';
 import { ProjetService } from '../../services/projet.service';
@@ -7,28 +7,34 @@ import { Projet } from '../../shared/projet.model';
 import { AuthService } from '../../services/auth.service';
 import { User, Role } from '../../shared/user.model';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { forkJoin, Subscription } from 'rxjs';
+import { gantt } from 'dhtmlx-gantt';
 
 @Component({
   selector: 'app-task-dashboard',
   templateUrl: './task-dashboard.component.html',
   styleUrls: ['./task-dashboard.component.css']
 })
-export class TaskDashboardComponent implements OnInit {
+export class TaskDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('gantt_here') ganttContainer!: ElementRef;
+
   projectId!: number;
   projectName: string = '';
   taches: Tache[] = [];
   kanbanColumns: any = {};
   isLoading: boolean = true;
-  currentView: string = 'kanban'; // 'kanban' or 'list'
+  currentView: string = 'kanban'; // 'kanban' or 'list' or 'gantt'
   currentUser: User | null = null;
   showAddTaskButton: boolean = false;
   isProjectManager: boolean = false;
+  private dataSubscription!: Subscription;
 
   constructor(
     private route: ActivatedRoute, 
     private tacheService: TacheService, 
     private projetService: ProjetService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -44,6 +50,16 @@ export class TaskDashboardComponent implements OnInit {
         this.loadTasksForProject(this.projectId);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    gantt.init(this.ganttContainer.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
   }
 
   loadProjectDetails(projectId: number): void {
@@ -101,10 +117,17 @@ export class TaskDashboardComponent implements OnInit {
           this.kanbanColumns['À faire'].push(tache);
       }
     });
+
+    if (this.currentView === 'gantt' && this.taches.length > 0) {
+      setTimeout(() => this.setupGanttChart(), 0);
+    }
   }
 
-  toggleView(viewName: string): void {
-    this.currentView = viewName;
+  toggleView(view: string): void {
+    this.currentView = view;
+    if (view === 'gantt' && this.taches.length > 0) {
+      this.setupGanttChart();
+    }
   }
 
   onTaskDrop(event: CdkDragDrop<Tache[]>) {
@@ -156,5 +179,41 @@ export class TaskDashboardComponent implements OnInit {
         }
       );
     }
+  }
+
+  setupGanttChart(): void {
+    if (!this.ganttContainer?.nativeElement) {
+      return;
+    }
+
+    gantt.config.date_format = "%Y-%m-%d";
+    gantt.config.readonly = !this.isProjectManager;
+
+    // Use the new scales configuration to fix the warning
+    gantt.config.scales = [
+        { unit: "month", step: 1, format: "%F, %Y" },
+        { unit: "day", step: 1, format: "%j, %D" }
+    ];
+
+    gantt.config.columns = [
+      { name: "text", label: "Tâche", tree: true, width: '*' },
+      { name: "start_date", label: "Date de début", align: "center", width: 120 },
+      { name: "duration", label: "Durée (j)", align: "center", width: 80 }
+    ];
+
+    // A little hack to make gantt redraw when switching views
+    gantt.init(this.ganttContainer.nativeElement);
+
+    const ganttData = this.taches.map(tache => ({
+      id: tache.idTache,
+      text: tache.titre,
+      // Force dates into YYYY-MM-DD string format to fix the TypeError
+      start_date: new Date(tache.dateDebut).toISOString().substring(0, 10),
+      end_date: new Date(tache.dateFin).toISOString().substring(0, 10),
+      progress: (tache.progression || 0) / 100,
+      open: true
+    }));
+
+    gantt.parse({ data: ganttData, links: [] });
   }
 } 
