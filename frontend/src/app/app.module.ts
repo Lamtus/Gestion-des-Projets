@@ -18,6 +18,8 @@ import { CreateTacheComponent } from './components/create-tache/create-tache.com
 import { MyTasksComponent } from './components/my-tasks/my-tasks.component';
 import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscore-with-space.pipe';
+import { TeamMembersComponent } from './components/team-members/team-members.component';
+import { AddMemberComponent } from './components/add-member/add-member.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,9 @@ import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscor
     TaskDashboardComponent,
     CreateTacheComponent,
     MyTasksComponent,
-    ReplaceUnderscoreWithSpacePipe
+    ReplaceUnderscoreWithSpacePipe,
+    TeamMembersComponent,
+    AddMemberComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -19,6 +20,11 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // Redirect if already logged in
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate([this.authService.getRedirectUrl()]);
+    }
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -27,22 +33,24 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
       const { email, password } = this.loginForm.value;
+      
       this.authService.login(email, password).subscribe(
         response => {
-          console.log('Login successful', response);
-          if (response && response.token) {
-            this.authService.saveToken(response.token);
-          }
-          this.router.navigate(['/dashboard']);
+          this.isLoading = false;
+          // Navigate based on user role
+          this.router.navigate([this.authService.getRedirectUrl()]);
         },
         error => {
-          this.errorMessage = 'Login failed. Please check your credentials.';
+          this.isLoading = false;
+          this.errorMessage = 'La connexion a échoué. Veuillez vérifier vos identifiants.';
           console.error('Login failed', error);
         }
       );
     } else {
-      this.errorMessage = 'Please enter valid email and password.';
+      this.errorMessage = 'Veuillez entrer un email et un mot de passe valides.';
     }
   }
 } 

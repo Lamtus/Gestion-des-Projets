@@ -8,10 +8,14 @@ import { TaskDashboardComponent } from './components/task-dashboard/task-dashboa
 import { CreateTacheComponent } from './components/create-tache/create-tache.component';
 import { MyTasksComponent } from './components/my-tasks/my-tasks.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { TeamMembersComponent } from './components/team-members/team-members.component';
+import { AddMemberComponent } from './components/add-member/add-member.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path:'equipe',component:TeamMembersComponent,canActivate:[AuthGuard]},
+  { path: 'add-member', component: AddMemberComponent, canActivate: [AuthGuard] },
   { path: 'create-project', component: CreateProjectComponent, canActivate: [AuthGuard] },
   { path: 'project-tasks/:projectId', component: TaskDashboardComponent, canActivate: [AuthGuard] },
   { path: 'projet/:projectId/create-tache', component: CreateTacheComponent, canActivate: [AuthGuard] },

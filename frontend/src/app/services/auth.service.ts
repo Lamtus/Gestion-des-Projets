@@ -3,30 +3,40 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ApiConfigService } from '../config/api.config';
 import { User, Role } from '../shared/user.model';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
+import { RegisterRequest } from '../shared/register-request.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'jwt_token';
+  private currentUser: User | null = null;
 
   constructor(
     private http: HttpClient,
     private apiConfig: ApiConfigService
-  ) { }
+  ) {
+    // Try to load user from token on service initialization
+    this.currentUser = this.getUserDetailsFromToken();
+  }
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiConfig.getAuthUrl()}/login`, { email, password }).pipe(
-      tap((response: any) => {
+  login(email: string, password: string): Observable<{ user: User; token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiConfig.getAuthUrl()}/login`, { email, password }).pipe(
+      tap(response => {
         if (response && response.token) {
           this.saveToken(response.token);
+          this.currentUser = this.getUserDetailsFromToken();
         }
-      })
+      }),
+      map(response => ({
+        token: response.token,
+        user: this.getUserDetailsFromToken()!
+      }))
     );
   }
 
-  register(user: User): Observable<any> {
+  register(user: RegisterRequest): Observable<any> {
     return this.http.post(`${this.apiConfig.getAuthUrl()}/register`, user);
   }
 
@@ -47,28 +57,42 @@ export class AuthService {
 
   removeToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUser = null;
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
+  getCurrentUser(): User | null {
+    if (!this.currentUser && this.isLoggedIn()) {
+      this.currentUser = this.getUserDetailsFromToken();
+    }
+    return this.currentUser;
+  }
+
+  isAdmin(): boolean {
+    return this.getCurrentUser()?.role === Role.ADMIN;
+  }
+
+  getRedirectUrl(): string {
+    const user = this.getCurrentUser();
+    if (user?.role === Role.ADMIN) {
+      return '/equipe';
+    }
+    return '/dashboard';
+  }
+
   getUserDetailsFromToken(): User | null {
     const token = this.getToken();
     if (token) {
       try {
-        // Decode JWT token to get user details including roles
-        // You would typically use a library like 'jwt-decode' for this
-        // For demonstration, let's assume a simple structure or mock
-        const decodedToken = JSON.parse(atob(token.split('.')[1])); // Basic decode (not for production with untrusted tokens)
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
         
-        // IMPORTANT: Adjust this based on your actual JWT payload structure
-        // Example assuming roles are in decodedToken.roles as an array of strings
         const user: User = {
-          id: decodedToken.userId || 0, // Adjust field name
-          email: decodedToken.sub || '', // Subject is usually email
-          role: decodedToken.role as Role, // Assuming a single role directly in the token, cast to Role enum
-          // Add other user properties as needed from the token
+          id: decodedToken.userId || 0,
+          email: decodedToken.sub || '',
+          role: decodedToken.role as Role,
           nom: decodedToken.nom || '',
           prenom: decodedToken.prenom || '',
           telephone: decodedToken.telephone || '',
@@ -87,6 +111,5 @@ export class AuthService {
 
   logout(): void {
     this.removeToken();
-    // Optionally redirect to login page
   }
 } 
