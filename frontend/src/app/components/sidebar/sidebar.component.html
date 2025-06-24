@@ -1,8 +1,8 @@
-<div class="sidebar">
+<div class="sidebar" [class.collapsed]="isCollapsed$ | async">
   <div class="logo">
     <img src="../../../assets/logo.png" alt="ProjectHub Logo">
-    <span>ProjectHub</span>
-    <p>Gestion de projets</p>
+    <span *ngIf="!(isCollapsed$ | async)">ProjectHub</span>
+    <p *ngIf="!(isCollapsed$ | async)">Gestion de projets</p>
   </div>
   <nav class="navigation">
     <ul>
@@ -40,9 +40,15 @@
       </li>
     </ul>
   </nav>
-  <div class="user-info">
-    <i class="fas fa-user-circle"></i>
-    <span *ngIf="currentUser">{{ currentUser.prenom }} {{ currentUser.nom }}</span>
-    <span *ngIf="!currentUser">Chargement...</span>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i>
+      <span *ngIf="!(isCollapsed$ | async) && currentUser">{{ currentUser.prenom }} {{ currentUser.nom }}</span>
+      <span *ngIf="!(isCollapsed$ | async) && !currentUser">Chargement...</span>
+    </div>
+    <div class="toggle-btn" (click)="toggleSidebar()">
+      <i class="fas" [ngClass]="(isCollapsed$ | async) ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+    </div>
   </div>
 </div> 

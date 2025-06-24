@@ -20,6 +20,7 @@ import { TokenInterceptor } from './core/interceptors/token.interceptor';
 import { ReplaceUnderscoreWithSpacePipe } from './shared/pipes/replace-underscore-with-space.pipe';
 import { TeamMembersComponent } from './components/team-members/team-members.component';
 import { AddMemberComponent } from './components/add-member/add-member.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { AddMemberComponent } from './components/add-member/add-member.component
     MyTasksComponent,
     ReplaceUnderscoreWithSpacePipe,
     TeamMembersComponent,
-    AddMemberComponent
+    AddMemberComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

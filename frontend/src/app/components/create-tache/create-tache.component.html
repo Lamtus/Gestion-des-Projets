@@ -1,137 +1,131 @@
-<div class="app-layout-container">
-  <app-sidebar></app-sidebar>
+<div class="create-tache-container p-8">
+  <h1 class="text-3xl font-bold">Créer une nouvelle tâche</h1>
+  <p class="subtitle text-muted-foreground mt-2">Définissez les détails de la tâche, assignez-la à un membre de l'équipe et configurez les dépendances.</p>
 
-  <div class="main-content-area">
-    <div class="create-tache-container">
-      <h1 class="text-3xl font-bold">Créer une nouvelle tâche</h1>
-      <p class="subtitle text-muted-foreground mt-2">Définissez les détails de la tâche, assignez-la à un membre de l'équipe et configurez les dépendances.</p>
-
-      <div class="content-wrapper">
-        <div class="form-section">
-          <form [formGroup]="tacheForm" (ngSubmit)="onSubmit()" class="space-y-6">
-            <!-- Informations de la tâche -->
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Informations de la tâche</h2>
-                <p class="card-description">Définissez les détails principaux de votre tâche.</p>
+  <div class="content-wrapper">
+    <div class="form-section">
+      <form [formGroup]="tacheForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Informations de la tâche -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Informations de la tâche</h2>
+            <p class="card-description">Définissez les détails principaux de votre tâche.</p>
+          </div>
+          <div class="card-content space-y-4">
+            <div>
+              <label for="titre" class="block text-sm font-medium text-gray-700">Titre de la tâche</label>
+              <input type="text" id="titre" formControlName="titre" placeholder="Entrez le titre de la tâche" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <p class="text-xs text-gray-500 mt-1">Un titre clair et descriptif pour la tâche.</p>
+            </div>
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+              <textarea id="description" formControlName="description" rows="4" placeholder="Décrivez en détail ce qui doit être accompli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label for="priorite" class="block text-sm font-medium text-gray-700">Priorité</label>
+                <select id="priorite" formControlName="priorite" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+                </select>
               </div>
-              <div class="card-content space-y-4">
-                <div>
-                  <label for="titre" class="block text-sm font-medium text-gray-700">Titre de la tâche</label>
-                  <input type="text" id="titre" formControlName="titre" placeholder="Entrez le titre de la tâche" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  <p class="text-xs text-gray-500 mt-1">Un titre clair et descriptif pour la tâche.</p>
-                </div>
-                <div>
-                  <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea id="description" formControlName="description" rows="4" placeholder="Décrivez en détail ce qui doit être accompli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                  <div>
-                    <label for="priorite" class="block text-sm font-medium text-gray-700">Priorité</label>
-                    <select id="priorite" formControlName="priorite" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="estimation" class="block text-sm font-medium text-gray-700">Estimation (heures)</label>
-                    <input type="number" id="estimation" formControlName="estimation" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label for="dateEcheance" class="block text-sm font-medium text-gray-700">Date d'échéance</label>
-                    <input type="date" id="dateEcheance" formControlName="dateEcheance" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  </div>
-                </div>
-                <div>
-                  <label for="tags" class="block text-sm font-medium text-gray-700">Tags (optionnel)</label>
-                  <input type="text" id="tags" formControlName="tags" placeholder="Ex: frontend, urgent, api (séparés par des virgules)" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  <p class="text-xs text-gray-500 mt-1">Ajoutez des tags pour faciliter la recherche et l'organisation.</p>
-                </div>
+              <div>
+                <label for="estimation" class="block text-sm font-medium text-gray-700">Estimation (heures)</label>
+                <input type="number" id="estimation" formControlName="estimation" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="dateEcheance" class="block text-sm font-medium text-gray-700">Date d'échéance</label>
+                <input type="date" id="dateEcheance" formControlName="dateEcheance" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               </div>
             </div>
-
-            <!-- Assignation -->
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Assignation</h2>
-                <p class="card-description">Sélectionnez le membre de l'équipe responsable de cette tâche.</p>
-              </div>
-              <div class="card-content space-y-4">
-                <div>
-                  <label for="assigneA" class="block text-sm font-medium text-gray-700">Assigné à</label>
-                  <select id="assigneA" formControlName="assigneA" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option [value]="null" disabled>Sélectionner un membre de l'équipe</option>
-                    <option *ngFor="let member of availableMembers" [value]="member.id">{{ member.nom }}</option>
-                  </select>
-                </div>
-              </div>
+            <div>
+              <label for="tags" class="block text-sm font-medium text-gray-700">Tags (optionnel)</label>
+              <input type="text" id="tags" formControlName="tags" placeholder="Ex: frontend, urgent, api (séparés par des virgules)" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <p class="text-xs text-gray-500 mt-1">Ajoutez des tags pour faciliter la recherche et l'organisation.</p>
             </div>
-
-            <!-- Tâches antécédentes -->
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Tâches antécédentes</h2>
-                <p class="card-description">Sélectionnez les tâches qui doivent être terminées avant de commencer cette tâche.</p>
-              </div>
-              <div class="card-content space-y-4" id="antecedent-tasks-content">
-                <p class="block text-sm font-medium text-gray-700">Tâches disponibles:</p>
-                <div *ngFor="let task of antecedentTasks" class="flex items-start space-x-3 mb-2">
-                  <input type="checkbox" [value]="task.idTache" (change)="onAntecedentTaskChange($event)" class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                  <div class="text-sm">
-                    <label class="font-medium text-gray-900">{{ task.titre }}</label>
-                    <p class="text-gray-500"><span>{{ task.statut }}</span> | <span>Priorité: {{ task.priorite }}</span> | <span>Assigné à: {{ task.assigne?.nom }}</span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-footer flex justify-end">
-              <button type="submit" [disabled]="!tacheForm.valid" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Créer la tâche</button>
-            </div>
-          </form>
+          </div>
         </div>
 
-        <div class="side-panel">
-          <!-- Équipe disponible -->
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Équipe disponible</h2>
-              <p class="card-description">Consultez la charge de travail de chaque membre.</p>
+        <!-- Assignation -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Assignation</h2>
+            <p class="card-description">Sélectionnez le membre de l'équipe responsable de cette tâche.</p>
+          </div>
+          <div class="card-content space-y-4">
+            <div>
+              <label for="assigneA" class="block text-sm font-medium text-gray-700">Assigné à</label>
+              <select id="assigneA" formControlName="assigneA" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <option [value]="null" disabled>Sélectionner un membre de l'équipe</option>
+                <option *ngFor="let member of availableMembers" [value]="member.id">{{ member.nom }}</option>
+              </select>
             </div>
-            <div class="card-content space-y-4" id="team-members-content">
-              <div *ngFor="let member of availableMembers" class="member-item flex items-center space-x-4">
-                <div class="member-avatar">{{ member.nom.charAt(0) }}</div>
-                <div class="flex-1">
-                  <p class="font-medium">{{ member.prenom }} {{ member.nom }}</p>
-                  <p class="text-sm text-gray-500">{{ member.role }}</p>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <span>Charge: {{ member.charge }}%</span>
-                    <div class="charge-bar-container w-full bg-gray-200 rounded-full h-2 ml-2">
-                      <div class="charge-bar rounded-full h-full"
-                        [style.width.%]="member.charge"
-                        [ngClass]="{
-                          'bg-green-500': member.charge < 70,
-                          'bg-yellow-500': member.charge >= 70 && member.charge < 90,
-                          'bg-red-500': member.charge >= 90
-                        }"></div>
-                    </div>
-                  </div>
-                </div>
-                <span [ngClass]="getAvailabilityClass(member.availability)">{{ member.availability }}</span>
+          </div>
+        </div>
+
+        <!-- Tâches antécédentes -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Tâches antécédentes</h2>
+            <p class="card-description">Sélectionnez les tâches qui doivent être terminées avant de commencer cette tâche.</p>
+          </div>
+          <div class="card-content space-y-4" id="antecedent-tasks-content">
+            <p class="block text-sm font-medium text-gray-700">Tâches disponibles:</p>
+            <div *ngFor="let task of antecedentTasks" class="flex items-start space-x-3 mb-2">
+              <input type="checkbox" [value]="task.idTache" (change)="onAntecedentTaskChange($event)" class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <div class="text-sm">
+                <label class="font-medium text-gray-900">{{ task.titre }}</label>
+                <p class="text-gray-500"><span>{{ task.statut }}</span> | <span>Priorité: {{ task.priorite }}</span> | <span>Assigné à: {{ task.assigne?.nom }}</span></p>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Conseils -->
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Conseils</h2>
+        <div class="card-footer flex justify-end">
+          <button type="submit" [disabled]="!tacheForm.valid" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Créer la tâche</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="side-panel">
+      <!-- Équipe disponible -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Équipe disponible</h2>
+          <p class="card-description">Consultez la charge de travail de chaque membre.</p>
+        </div>
+        <div class="card-content space-y-4" id="team-members-content">
+          <div *ngFor="let member of availableMembers" class="member-item flex items-center space-x-4">
+            <div class="member-avatar">{{ member.nom.charAt(0) }}</div>
+            <div class="flex-1">
+              <p class="font-medium">{{ member.prenom }} {{ member.nom }}</p>
+              <p class="text-sm text-gray-500">{{ member.role }}</p>
+              <div class="flex items-center text-sm text-gray-500">
+                <span>Charge: {{ member.charge }}%</span>
+                <div class="charge-bar-container w-full bg-gray-200 rounded-full h-2 ml-2">
+                  <div class="charge-bar rounded-full h-full"
+                    [style.width.%]="member.charge"
+                    [ngClass]="{
+                      'bg-green-500': member.charge < 70,
+                      'bg-yellow-500': member.charge >= 70 && member.charge < 90,
+                      'bg-red-500': member.charge >= 90
+                    }"></div>
+                </div>
+              </div>
             </div>
-            <div class="card-content space-y-3 text-sm text-gray-600">
-              <p><strong>Dépendances</strong> - Sélectionnez uniquement les tâches qui doivent absolument être terminées avant de commencer.</p>
-              <p><strong>Assignation</strong> - Vérifiez la charge de travail actuelle du membre avant l'assignation.</p>
-              <p><strong>Estimation</strong> - Soyez réaliste dans l'estimation du temps nécessaire.</p>
-            </div>
+            <span [ngClass]="getAvailabilityClass(member.availability)">{{ member.availability }}</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Conseils -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Conseils</h2>
+        </div>
+        <div class="card-content space-y-3 text-sm text-gray-600">
+          <p><strong>Dépendances</strong> - Sélectionnez uniquement les tâches qui doivent absolument être terminées avant de commencer.</p>
+          <p><strong>Assignation</strong> - Vérifiez la charge de travail actuelle du membre avant l'assignation.</p>
+          <p><strong>Estimation</strong> - Soyez réaliste dans l'estimation du temps nécessaire.</p>
         </div>
       </div>
     </div>

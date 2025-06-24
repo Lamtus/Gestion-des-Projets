@@ -1,56 +1,52 @@
-<div class="app-layout-container">
-  <app-sidebar></app-sidebar>
+<div class="dashboard-container">
+  <header class="header">
+    <div class="header-left">
+      <i class="fas fa-grip-vertical"></i>
+      <h2>Tableau de bord des projets</h2>
+    </div>
+  </header>
 
-  <div class="main-content-area">
-    <header class="header">
-      <div class="header-left">
-        <i class="fas fa-grip-vertical"></i>
-        <h2>Tableau de bord des projets</h2>
+  <div class="content-area">
+    <div class="projects-header">
+      <h3>Mes Projets</h3>
+      <p>Gérez et suivez l'avancement de vos projets</p>
+      <button class="new-project-btn" (click)="createNewProject()" *ngIf="isDirecteur">
+        <i class="fas fa-plus"></i> Nouveau Projet
+      </button>
+    </div>
+
+    <div class="project-cards-container">
+      <div *ngIf="isLoading" class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> Chargement des projets...
       </div>
-    </header>
 
-    <div class="content-area">
-      <div class="projects-header">
-        <h3>Mes Projets</h3>
-        <p>Gérez et suivez l'avancement de vos projets</p>
-        <button class="new-project-btn" (click)="createNewProject()" *ngIf="isDirecteur">
-          <i class="fas fa-plus"></i> Nouveau Projet
-        </button>
+      <div *ngIf="!isLoading && projets.length === 0" class="no-projects-message">
+        <i class="fas fa-folder-open no-projects-icon"></i>
+        <p>Pas de projets actuellement.</p>
       </div>
 
-      <div class="project-cards-container">
-        <div *ngIf="isLoading" class="loading-indicator">
-          <i class="fas fa-spinner fa-spin"></i> Chargement des projets...
+      <div class="project-card" *ngFor="let projet of projets" (click)="viewProjectTasks(projet.idProjet)">
+        <div class="card-header">
+          <h4>{{ projet.titre }}</h4>
+          <span class="status" [ngClass]="{
+            'en-cours': projet.statut === 'EN_COURS',
+            'terminé': projet.statut === 'TERMINE',
+            'en-attente': projet.statut === 'EN_ATTENTE',
+            'annulé': projet.statut === 'ANNULE',
+            'non-commence': projet.statut === 'non-commence'
+          }">
+            <i *ngIf="projet.statut === 'EN_COURS'" class="fas fa-clock"></i>
+            <i *ngIf="projet.statut === 'TERMINE'" class="fas fa-check-circle"></i>
+            <i *ngIf="projet.statut === 'EN_ATTENTE'" class="fas fa-exclamation-circle"></i>
+            <i *ngIf="projet.statut === 'ANNULE'" class="fas fa-times-circle"></i>
+            <i *ngIf="projet.statut === 'non-commence'" class="fas fa-hourglass-start"></i>
+            {{ projet.statut | replaceUnderscoreWithSpace | titlecase }}
+          </span>
         </div>
-
-        <div *ngIf="!isLoading && projets.length === 0" class="no-projects-message">
-          <i class="fas fa-folder-open no-projects-icon"></i>
-          <p>Pas de projets actuellement.</p>
-        </div>
-
-        <div class="project-card" *ngFor="let projet of projets" (click)="viewProjectTasks(projet.idProjet)">
-          <div class="card-header">
-            <h4>{{ projet.titre }}</h4>
-            <span class="status" [ngClass]="{
-              'en-cours': projet.statut === 'EN_COURS',
-              'terminé': projet.statut === 'TERMINE',
-              'en-attente': projet.statut === 'EN_ATTENTE',
-              'annulé': projet.statut === 'ANNULE',
-              'non-commence': projet.statut === 'non-commence'
-            }">
-              <i *ngIf="projet.statut === 'EN_COURS'" class="fas fa-clock"></i>
-              <i *ngIf="projet.statut === 'TERMINE'" class="fas fa-check-circle"></i>
-              <i *ngIf="projet.statut === 'EN_ATTENTE'" class="fas fa-exclamation-circle"></i>
-              <i *ngIf="projet.statut === 'ANNULE'" class="fas fa-times-circle"></i>
-              <i *ngIf="projet.statut === 'non-commence'" class="fas fa-hourglass-start"></i>
-              {{ projet.statut | replaceUnderscoreWithSpace | titlecase }}
-            </span>
-          </div>
-          <p class="description">{{ projet.description }}</p>
-          <div class="project-chef">
-            <i class="fas fa-user-tie"></i>
-            <span>Chef de projet: {{ projet.chefProjet?.nom }} {{ projet.chefProjet?.prenom }}</span>
-          </div>
+        <p class="description">{{ projet.description }}</p>
+        <div class="project-chef">
+          <i class="fas fa-user-tie"></i>
+          <span>Chef de projet: {{ projet.chefProjet?.nom }} {{ projet.chefProjet?.prenom }}</span>
         </div>
       </div>
     </div>

@@ -87,12 +87,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void changePassword(String email, String newPassword) {
+    public AuthResponse changePassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException("Utilisateur non trouvé"));
 
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setFirstLogin(false);
         userRepository.save(user);
+
+        // Générer un nouveau token avec la mise à jour de firstLogin
+        String newToken = jwtService.generateToken(user);
+        
+        return AuthResponse.builder()
+                .token(newToken)
+                .message("Mot de passe modifié avec succès")
+                .firstLogin(user.isFirstLogin()) // Sera false
+                .build();
     }
 } 

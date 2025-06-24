@@ -1,5 +1,9 @@
 /* Styles for DashboardComponent specific elements */
 
+.dashboard-container {
+  padding: 1.5rem;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -204,109 +208,6 @@
   }
 }
 
-.sidebar {
-  width: 250px;
-  background-color: #ffffff;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.logo {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.logo img {
-  width: 50px;
-  margin-bottom: 10px;
-}
-
-.logo span {
-  display: block;
-  font-size: 24px;
-  font-weight: 700;
-  color: #333;
-}
-
-.logo p {
-  font-size: 14px;
-  color: #777;
-  margin-top: 5px;
-}
-
-.navigation ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex-grow: 1;
-}
-
-.navigation li {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  color: #555;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.navigation li:hover {
-  background-color: #e6f2ff;
-  color: #007bff;
-}
-
-.navigation li.active {
-  background-color: #007bff;
-  color: white;
-}
-
-.navigation li i {
-  margin-right: 15px;
-  font-size: 18px;
-}
-
-.navigation li.active i {
-  color: white;
-}
-
-.logout-btn {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-}
-
-.logout-btn:hover {
-  background-color: #fcebeb;
-  color: #dc3545;
-}
-
-.logout-btn i {
-  color: #dc3545;
-}
-
-.logout-btn:hover i {
-  color: #dc3545;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  border-top: 1px solid #eee;
-  margin-top: auto;
-  color: #555;
-}
-
-.user-info i {
-  margin-right: 15px;
-  font-size: 24px;
-  color: #007bff;
-}
-
 .unauthorized-message {
   display: flex;
   flex-direction: column;
@@ -347,37 +248,6 @@
 
 /* Basic responsive adjustments */
 @media (max-width: 480px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    padding: 10px;
-    box-shadow: none;
-    position: relative;
-  }
-
-  .navigation ul {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .navigation li {
-    flex-direction: column;
-    font-size: 12px;
-    width: auto;
-    margin: 5px;
-    padding: 8px;
-  }
-
-  .navigation li i {
-    margin-right: 0;
-    margin-bottom: 5px;
-  }
-
-  .user-info {
-    display: none; /* Hide user info on very small screens */
-  }
-
   .header {
     padding: 15px;
   }

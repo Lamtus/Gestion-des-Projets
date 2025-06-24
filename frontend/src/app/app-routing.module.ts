@@ -10,9 +10,11 @@ import { MyTasksComponent } from './components/my-tasks/my-tasks.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { TeamMembersComponent } from './components/team-members/team-members.component';
 import { AddMemberComponent } from './components/add-member/add-member.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path:'equipe',component:TeamMembersComponent,canActivate:[AuthGuard]},
   { path: 'add-member', component: AddMemberComponent, canActivate: [AuthGuard] },

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { ApiConfigService } from '../config/api.config';
 import { User, Role } from '../shared/user.model';
-import { tap, map } from 'rxjs/operators';
+import { tap, map, catchError } from 'rxjs/operators';
 import { RegisterRequest } from '../shared/register-request.model';
+import { AuthResponse } from '../web/dto/auth-response';
 
 @Injectable({
   providedIn: 'root'
@@ -40,11 +41,33 @@ export class AuthService {
     return this.http.post(`${this.apiConfig.getAuthUrl()}/register`, user);
   }
 
-  changePassword(oldPassword: string, newPassword: string): Observable<any> {
-    return this.http.post(`${this.apiConfig.getAuthUrl()}/change-password`, {
-      oldPassword,
+  changePassword(email: string, newPassword: string): Observable<AuthResponse> {
+    if (!email || !newPassword) {
+      return throwError(() => new Error('Email et mot de passe sont requis'));
+    }
+
+    // Valider le format du mot de passe
+    const passwordPattern = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$/;
+    if (!passwordPattern.test(newPassword)) {
+      return throwError(() => new Error('Le format du mot de passe est invalide'));
+    }
+
+    return this.http.post<AuthResponse>(`${this.apiConfig.getAuthUrl()}/change-password`, {
+      email,
       newPassword
-    });
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Erreur lors du changement de mot de passe:', error);
+        if (error.error instanceof ErrorEvent) {
+          // Erreur côté client
+          return throwError(() => new Error('Erreur de connexion. Veuillez vérifier votre connexion internet.'));
+        } else {
+          // Erreur côté serveur
+          const message = error.error?.message || 'Une erreur est survenue lors du changement de mot de passe.';
+          return throwError(() => new Error(message));
+        }
+      })
+    );
   }
 
   saveToken(token: string): void {

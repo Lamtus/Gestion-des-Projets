@@ -32,8 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        authService.changePassword(request.getEmail(), request.getNewPassword());
-        return ResponseEntity.ok().body("Mot de passe modifié avec succès");
+    public ResponseEntity<AuthResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        AuthResponse response = authService.changePassword(request.getEmail(), request.getNewPassword());
+        return ResponseEntity.ok(response);
     }
 } 

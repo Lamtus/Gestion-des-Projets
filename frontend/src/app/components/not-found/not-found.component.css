@@ -1,39 +1,47 @@
-.not-found-container {
+.page-container {
   display: flex;
-  flex-direction: column;
+  height: 100vh;
+}
+
+.content-container {
+  flex-grow: 1;
+  display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f0f2f5;
-  font-family: 'Roboto', sans-serif;
-  color: #333;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+
+.not-found-content {
   text-align: center;
-  padding: 20px;
+  max-width: 600px;
 }
 
 h1 {
-  font-size: 120px;
-  margin: 0;
+  font-size: 8rem;
+  font-weight: 700;
   color: #007bff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
 }
 
 h2 {
-  font-size: 36px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  color: #555;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #343a40;
+  margin-bottom: 1rem;
 }
 
 p {
-  font-size: 18px;
-  color: #777;
-  margin-bottom: 40px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
 }
 
 .actions {
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .btn-primary {
@@ -45,6 +53,8 @@ p {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: none; /* Pour les liens stylisés en boutons */
+  display: inline-block;
 }
 
 .btn-primary:hover {

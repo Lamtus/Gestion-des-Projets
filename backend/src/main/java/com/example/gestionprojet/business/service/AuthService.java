@@ -24,5 +24,5 @@ public interface AuthService {
      * @param email L'email de l'utilisateur
      * @param newPassword Le nouveau mot de passe
      */
-    void changePassword(String email, String newPassword);
+    AuthResponse changePassword(String email, String newPassword);
 } 

@@ -1,155 +1,149 @@
-<div class="app-layout-container">
-  <app-sidebar></app-sidebar>
-
-  <div class="main-content-area">
-    <div class="task-dashboard-container">
-      <header class="dashboard-header">
-        <div class="header-left">
-          <i class="fas fa-briefcase"></i>
-          <h1>{{ projectName }}</h1>
-          <p>Gérez les tâches de votre projet</p>
+<div class="task-dashboard-container p-8">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <i class="fas fa-briefcase"></i>
+      <h1>{{ projectName }}</h1>
+      <p>Gérez les tâches de votre projet</p>
+    </div>
+    <div class="header-right">
+      <div class="search-filter-group">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher une tâche...">
         </div>
-        <div class="header-right">
-          <div class="search-filter-group">
-            <div class="search-box">
-              <i class="fas fa-search"></i>
-              <input type="text" placeholder="Rechercher une tâche...">
-            </div>
-            <button class="filter-btn">
-              <i class="fas fa-filter"></i> Filtrer
-            </button>
-          </div>
-          <button class="new-task-btn" *ngIf="showAddTaskButton" [routerLink]="['/projet', projectId, 'create-tache']">
-            <i class="fas fa-plus"></i> Nouvelle Tâche
-          </button>
+        <button class="filter-btn">
+          <i class="fas fa-filter"></i> Filtrer
+        </button>
+      </div>
+      <button class="new-task-btn" *ngIf="showAddTaskButton" [routerLink]="['/projet', projectId, 'create-tache']">
+        <i class="fas fa-plus"></i> Nouvelle Tâche
+      </button>
+    </div>
+  </header>
+
+  <div class="task-summary">
+    <span class="total-tasks"><i class="fas fa-circle total"></i> {{ taches.length }} tâches au total</span>
+    <span class="in-progress-tasks"><i class="fas fa-circle in-progress"></i> {{ kanbanColumns['En cours']?.length || 0 }} en cours</span>
+    <span class="todo-tasks"><i class="fas fa-circle todo"></i> {{ kanbanColumns['À faire']?.length || 0 }} à faire</span>
+  </div>
+
+  <div class="view-toggle">
+    <button class="view-kanban" [class.active]="currentView === 'kanban'" (click)="toggleView('kanban')">Vue Kanban</button>
+    <button class="view-list" [class.active]="currentView === 'list'" (click)="toggleView('list')">Vue Liste</button>
+  </div>
+
+  <div class="kanban-board" *ngIf="currentView === 'kanban'" cdkDropListGroup>
+    <div class="kanban-column" *ngFor="let column of ['À faire', 'En cours', 'Bloqué', 'Terminé']"
+         [id]="column"
+         cdkDropList
+         [cdkDropListData]="kanbanColumns[column]"
+         (cdkDropListDropped)="onTaskDrop($event)">
+      <div class="column-header">
+        <h2>{{ column }}</h2>
+        <span class="task-count">{{ kanbanColumns[column]?.length || 0 }}</span>
+      </div>
+      <div class="column-tasks">
+        <div *ngIf="kanbanColumns[column]?.length === 0" class="no-tasks-column-message">
+          <i class="fas fa-box-open no-tasks-icon"></i>
+          <p>Pas de tâche pour le moment.</p>
         </div>
-      </header>
-
-      <div class="task-summary">
-        <span class="total-tasks"><i class="fas fa-circle total"></i> {{ taches.length }} tâches au total</span>
-        <span class="in-progress-tasks"><i class="fas fa-circle in-progress"></i> {{ kanbanColumns['En cours']?.length || 0 }} en cours</span>
-        <span class="todo-tasks"><i class="fas fa-circle todo"></i> {{ kanbanColumns['À faire']?.length || 0 }} à faire</span>
-      </div>
-
-      <div class="view-toggle">
-        <button class="view-kanban" [class.active]="currentView === 'kanban'" (click)="toggleView('kanban')">Vue Kanban</button>
-        <button class="view-list" [class.active]="currentView === 'list'" (click)="toggleView('list')">Vue Liste</button>
-      </div>
-
-      <div class="kanban-board" *ngIf="currentView === 'kanban'" cdkDropListGroup>
-        <div class="kanban-column" *ngFor="let column of ['À faire', 'En cours', 'Bloqué', 'Terminé']"
-             [id]="column"
-             cdkDropList
-             [cdkDropListData]="kanbanColumns[column]"
-             (cdkDropListDropped)="onTaskDrop($event)">
-          <div class="column-header">
-            <h2>{{ column }}</h2>
-            <span class="task-count">{{ kanbanColumns[column]?.length || 0 }}</span>
-          </div>
-          <div class="column-tasks">
-            <div *ngIf="kanbanColumns[column]?.length === 0" class="no-tasks-column-message">
-              <i class="fas fa-box-open no-tasks-icon"></i>
-              <p>Pas de tâche pour le moment.</p>
-            </div>
-            <div class="task-card" *ngFor="let tache of kanbanColumns[column]"
-                 cdkDrag
-                 [cdkDragDisabled]="!isProjectManager">
-              <div class="card-header">
-                <h3>{{ tache.titre }}</h3>
-                <div class="card-options">
-                  <i class="fas fa-ellipsis-h"></i>
-                </div>
-              </div>
-              <p class="card-description">{{ tache.description }}</p>
-              <div class="progress-bar-container" *ngIf="tache.progression !== undefined && tache.progression !== null">
-                <div class="progress-bar" [style.width.%]="tache.progression"></div>
-                <span class="progress-text">Progression {{ tache.progression }}%</span>
-              </div>
-              <div class="card-footer">
-                <span class="priority" [ngClass]="{
-                  'priority-basse': tache.priorite?.toLowerCase() === 'basse',
-                  'priority-moyenne': tache.priorite?.toLowerCase() === 'moyenne',
-                  'priority-haute': tache.priorite?.toLowerCase() === 'haute'
-                }">
-                  <i class="fas fa-tag"></i> {{ tache.priorite }}
-                </span>
-                <span class="due-date"><i class="fas fa-calendar-alt"></i> {{ tache.dateFin | date:'yyyy-MM-dd' }}</span>
-              </div>
-              <div class="task-assignee">
-                <div class="assignee-avatar">
-                  {{ tache.assigne?.prenom?.charAt(0) }}{{ tache.assigne?.nom?.charAt(0) }}
-                </div>
-                <span class="assignee-name">{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</span>
-              </div>
+        <div class="task-card" *ngFor="let tache of kanbanColumns[column]"
+             cdkDrag
+             [cdkDragDisabled]="!isProjectManager">
+          <div class="card-header">
+            <h3>{{ tache.titre }}</h3>
+            <div class="card-options">
+              <i class="fas fa-ellipsis-h"></i>
             </div>
           </div>
+          <p class="card-description">{{ tache.description }}</p>
+          <div class="progress-bar-container" *ngIf="tache.progression !== undefined && tache.progression !== null">
+            <div class="progress-bar" [style.width.%]="tache.progression"></div>
+            <span class="progress-text">Progression {{ tache.progression }}%</span>
+          </div>
+          <div class="card-footer">
+            <span class="priority" [ngClass]="{
+              'priority-basse': tache.priorite?.toLowerCase() === 'basse',
+              'priority-moyenne': tache.priorite?.toLowerCase() === 'moyenne',
+              'priority-haute': tache.priorite?.toLowerCase() === 'haute'
+            }">
+              <i class="fas fa-tag"></i> {{ tache.priorite }}
+            </span>
+            <span class="due-date"><i class="fas fa-calendar-alt"></i> {{ tache.dateFin | date:'yyyy-MM-dd' }}</span>
+          </div>
+          <div class="task-assignee">
+            <div class="assignee-avatar">
+              {{ tache.assigne?.prenom?.charAt(0) }}{{ tache.assigne?.nom?.charAt(0) }}
+            </div>
+            <span class="assignee-name">{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</span>
+          </div>
         </div>
-      </div>
-
-      <div class="task-list-view" *ngIf="currentView === 'list'">
-        <div *ngIf="!taches || taches.length === 0" class="no-tasks-list-message">
-          <i class="fas fa-folder-open no-tasks-icon"></i>
-          <p>Aucune tâche disponible pour le moment.</p>
-          <p class="sub-message">Créez de nouvelles tâches pour commencer à gérer votre projet.</p>
-        </div>
-        <table class="task-table" *ngIf="taches && taches.length > 0">
-          <thead>
-            <tr>
-              <th>Titre</th>
-              <th>Description</th>
-              <th>Statut</th>
-              <th>Priorité</th>
-              <th>Progression</th>
-              <th>Date de fin</th>
-              <th>Assigné à</th>
-              <th>Tags</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let tache of taches">
-              <td>{{ tache.titre }}</td>
-              <td>{{ tache.description }}</td>
-              <td>
-                <span class="status-list-view" [ngClass]="{
-                  'en-cours': tache.statut?.toUpperCase() === 'EN_COURS',
-                  'termine': tache.statut?.toUpperCase() === 'TERMINE',
-                  'en-attente': tache.statut?.toUpperCase() === 'EN_ATTENTE',
-                  'annule': tache.statut?.toUpperCase() === 'ANNULE',
-                  'non-commence': tache.statut?.toLowerCase() === 'non-commence'
-                }">{{ tache.statut | replaceUnderscoreWithSpace | titlecase }}</span>
-              </td>
-              <td>
-                <span class="priority-list-view" [ngClass]="{
-                  'priority-basse': tache.priorite?.toLowerCase() === 'basse',
-                  'priority-moyenne': tache.priorite?.toLowerCase() === 'moyenne',
-                  'priority-haute': tache.priorite?.toLowerCase() === 'haute'
-                }">
-                  {{ tache.priorite | titlecase }}
-                </span>
-              </td>
-              <td>
-                <div class="task-progress-bar-container">
-                  <div class="task-progress-bar" [style.width.%]="tache.progression || 0"></div>
-                </div>
-              </td>
-              <td>{{ tache.dateFin | date:'yyyy-MM-dd' }}</td>
-              <td>
-                <div class="task-assignee-list">
-                  <div class="assignee-avatar-list">
-                    {{ tache.assigne?.prenom?.charAt(0) }}{{ tache.assigne?.nom?.charAt(0) }}
-                  </div>
-                  <span class="assignee-name-list">{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</span>
-                </div>
-              </td>
-              <td>
-                <div class="task-tags">
-                  <span *ngFor="let tag of tache.tags" class="task-tag">{{ tag }}</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
+  </div>
+
+  <div class="task-list-view" *ngIf="currentView === 'list'">
+    <div *ngIf="!taches || taches.length === 0" class="no-tasks-list-message">
+      <i class="fas fa-folder-open no-tasks-icon"></i>
+      <p>Aucune tâche disponible pour le moment.</p>
+      <p class="sub-message">Créez de nouvelles tâches pour commencer à gérer votre projet.</p>
+    </div>
+    <table class="task-table" *ngIf="taches && taches.length > 0">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Description</th>
+          <th>Statut</th>
+          <th>Priorité</th>
+          <th>Progression</th>
+          <th>Date de fin</th>
+          <th>Assigné à</th>
+          <th>Tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tache of taches">
+          <td>{{ tache.titre }}</td>
+          <td>{{ tache.description }}</td>
+          <td>
+            <span class="status-list-view" [ngClass]="{
+              'en-cours': tache.statut?.toUpperCase() === 'EN_COURS',
+              'termine': tache.statut?.toUpperCase() === 'TERMINE',
+              'en-attente': tache.statut?.toUpperCase() === 'EN_ATTENTE',
+              'annule': tache.statut?.toUpperCase() === 'ANNULE',
+              'non-commence': tache.statut?.toLowerCase() === 'non-commence'
+            }">{{ tache.statut | replaceUnderscoreWithSpace | titlecase }}</span>
+          </td>
+          <td>
+            <span class="priority-list-view" [ngClass]="{
+              'priority-basse': tache.priorite?.toLowerCase() === 'basse',
+              'priority-moyenne': tache.priorite?.toLowerCase() === 'moyenne',
+              'priority-haute': tache.priorite?.toLowerCase() === 'haute'
+            }">
+              {{ tache.priorite | titlecase }}
+            </span>
+          </td>
+          <td>
+            <div class="task-progress-bar-container">
+              <div class="task-progress-bar" [style.width.%]="tache.progression || 0"></div>
+            </div>
+          </td>
+          <td>{{ tache.dateFin | date:'yyyy-MM-dd' }}</td>
+          <td>
+            <div class="task-assignee-list">
+              <div class="assignee-avatar-list">
+                {{ tache.assigne?.prenom?.charAt(0) }}{{ tache.assigne?.nom?.charAt(0) }}
+              </div>
+              <span class="assignee-name-list">{{ tache.assigne?.prenom }} {{ tache.assigne?.nom }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="task-tags">
+              <span *ngFor="let tag of tache.tags" class="task-tag">{{ tag }}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div> 

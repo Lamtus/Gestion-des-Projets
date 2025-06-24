@@ -1,7 +1,5 @@
 .my-tasks-container {
-  padding: 30px;
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 60px);
+  padding: 1.5rem;
 }
 
 .dashboard-header {
