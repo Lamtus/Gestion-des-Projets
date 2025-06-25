@@ -53,12 +53,16 @@ export class TaskDashboardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit(): void {
-    gantt.init(this.ganttContainer.nativeElement);
+    // Initialization is now handled in setupGanttChart to support dynamic view switching.
   }
 
   ngOnDestroy(): void {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
+    }
+    // Use clearAll instead of destructor to avoid issues when re-initializing the component
+    if (gantt) {
+      gantt.clearAll();
     }
   }
 
@@ -125,8 +129,8 @@ export class TaskDashboardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   toggleView(view: string): void {
     this.currentView = view;
-    if (view === 'gantt' && this.taches.length > 0) {
-      this.setupGanttChart();
+    if (view === 'gantt') {
+      setTimeout(() => this.setupGanttChart(), 0);
     }
   }
 
@@ -188,6 +192,7 @@ export class TaskDashboardComponent implements OnInit, AfterViewInit, OnDestroy 
 
     gantt.config.date_format = "%Y-%m-%d";
     gantt.config.readonly = !this.isProjectManager;
+    gantt.config.fit_tasks = true;
 
     // Use the new scales configuration to fix the warning
     gantt.config.scales = [
@@ -201,19 +206,97 @@ export class TaskDashboardComponent implements OnInit, AfterViewInit, OnDestroy 
       { name: "duration", label: "Durée (j)", align: "center", width: 80 }
     ];
 
-    // A little hack to make gantt redraw when switching views
+    // Re-initialize Gantt on the container, this is crucial when the element is recreated by *ngIf
     gantt.init(this.ganttContainer.nativeElement);
 
-    const ganttData = this.taches.map(tache => ({
-      id: tache.idTache,
-      text: tache.titre,
-      // Force dates into YYYY-MM-DD string format to fix the TypeError
-      start_date: new Date(tache.dateDebut).toISOString().substring(0, 10),
-      end_date: new Date(tache.dateFin).toISOString().substring(0, 10),
-      progress: (tache.progression || 0) / 100,
-      open: true
-    }));
+    let ganttData = this.taches.map(tache => {
+      const startDate = new Date(tache.dateDebut);
+      const endDate = new Date(tache.dateFin);
+      let duration = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
-    gantt.parse({ data: ganttData, links: [] });
+      if (duration <= 0) {
+        duration = 1; // Gantt tasks should have a duration of at least 1 day.
+      }
+
+      return {
+        id: tache.idTache,
+        text: tache.titre,
+        start_date: startDate.toISOString().substring(0, 10),
+        duration: duration,
+        progress: (tache.progression || 0) / 100,
+        open: true
+      };
+    });
+
+    const ganttLinks = this.taches
+      .filter(tache => tache.idTache !== undefined && tache.predecesseursIds)
+      .flatMap(tache =>
+        (tache.predecesseursIds || []).map(predecessorId => {
+          const linkType = gantt.config.links.finish_to_start;
+          return {
+            id: `${predecessorId}-${tache.idTache!}`,
+            source: predecessorId,
+            target: tache.idTache!,
+            type: String(linkType || '0')
+          };
+        })
+      );
+
+    // Manual auto-scheduling logic
+    ganttData = this.manualSchedule(ganttData, ganttLinks);
+
+    gantt.parse({ data: ganttData, links: ganttLinks });
+  }
+
+  // Basic manual scheduling function
+  manualSchedule(tasks: any[], links: any[]): any[] {
+    const taskMap = new Map(tasks.map(t => [t.id, t]));
+
+    // Loop through links to adjust start dates
+    links.forEach(link => {
+      const predecessorTask = taskMap.get(link.source);
+      const successorTask = taskMap.get(link.target);
+
+      if (predecessorTask && successorTask) {
+        const predecessorEndDate = new Date(predecessorTask.start_date);
+        predecessorEndDate.setDate(predecessorEndDate.getDate() + predecessorTask.duration);
+
+        const successorStartDate = new Date(successorTask.start_date);
+
+        if (predecessorEndDate > successorStartDate) {
+          // Successor starts before predecessor ends, so we reschedule it
+          successorTask.start_date = predecessorEndDate.toISOString().substring(0, 10);
+          taskMap.set(successorTask.id, successorTask); // Update the map with the new date
+        }
+      }
+    });
+
+    // Handle multiple levels of dependencies by iterating multiple times
+    // A more robust solution might use a topological sort, but this is simpler for now
+    for (let i = 0; i < tasks.length; i++) {
+        links.forEach(link => {
+            const predecessorTask = taskMap.get(link.source);
+            const successorTask = taskMap.get(link.target);
+
+            if (predecessorTask && successorTask) {
+                const predecessorEndDate = new Date(predecessorTask.start_date);
+                predecessorEndDate.setDate(predecessorEndDate.getDate() + predecessorTask.duration);
+
+                const successorStartDate = new Date(successorTask.start_date);
+
+                if (predecessorEndDate > successorStartDate) {
+                    successorTask.start_date = predecessorEndDate.toISOString().substring(0, 10);
+                    taskMap.set(successorTask.id, successorTask);
+                }
+            }
+        });
+    }
+
+
+    return Array.from(taskMap.values());
+  }
+
+  hasUnscheduledTasks(tasks: any[], scheduledTasks: Set<any>): boolean {
+    return tasks.some(t => !scheduledTasks.has(t.id));
   }
 } 

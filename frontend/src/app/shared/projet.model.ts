@@ -1,7 +1,7 @@
 import { User } from './user.model';
 
 export interface Projet {
-    idProjet: number;
+    idProjet?: number;
     titre: string;
     description: string;
     statut: string;

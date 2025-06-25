@@ -41,7 +41,7 @@ public class TacheServiceImpl implements TacheService {
     public List<TacheResponseDto> getTachesByProjet(Long idProjet) {
         Projet projet = projetRepository.findById(idProjet)
             .orElseThrow(() -> new BusinessException("Projet non trouvé"));
-        List<Tache> taches = tacheRepository.findByProjet(projet);
+        List<Tache> taches = tacheRepository.findByProjetWithPredecesseurs(projet);
         
         return taches.stream().map(tache -> {
             User assigne = affectationRepository.findByTache(tache)

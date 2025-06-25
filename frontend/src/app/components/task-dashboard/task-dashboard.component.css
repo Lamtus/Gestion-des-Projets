@@ -174,9 +174,10 @@
 }
 
 .kanban-board {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  align-items: flex-start; /* Align columns at the top */
+  width: 100%;
 }
 
 .kanban-column {
@@ -614,4 +615,56 @@
 .task-card.cdk-drag-disabled {
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+/* --- Gantt Chart Styles --- */
+.gantt-container ::ng-deep .gantt_task_line {
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+}
+
+.gantt-container ::ng-deep .gantt_task_line.gantt_selected {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
+}
+
+.gantt-container ::ng-deep .gantt_task_progress {
+  background-color: #0056b3;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.gantt-container ::ng-deep .gantt_grid_scale .gantt_grid_head_cell,
+.gantt-container ::ng-deep .gantt_scale_line .gantt_scale_cell {
+  background-color: #f8f9fa;
+  color: #343a40;
+  font-weight: 600;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.gantt-container ::ng-deep .gantt_task_text {
+  font-weight: 500;
+  color: white;
+}
+
+.gantt-container ::ng-deep .gantt_today_marker {
+  background-color: rgba(255, 99, 71, 0.2);
+  border-left: 1px dashed #ff6347;
+}
+
+.gantt-container ::ng-deep .gantt_row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.gantt-container ::ng-deep .gantt_grid_data .gantt_row:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+.gantt-container ::ng-deep .gantt_task_row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.gantt-container ::ng-deep .gantt_task_row:nth-child(even) {
+  background-color: #fdfdfd;
 } 

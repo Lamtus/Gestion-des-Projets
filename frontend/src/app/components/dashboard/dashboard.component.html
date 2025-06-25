@@ -25,7 +25,7 @@
         <p>Pas de projets actuellement.</p>
       </div>
 
-      <div class="project-card" *ngFor="let projet of projets" (click)="viewProjectTasks(projet.idProjet)">
+      <div class="project-card" *ngFor="let projet of projets" (click)="projet.idProjet && viewProjectTasks(projet.idProjet)">
         <div class="card-header">
           <h4>{{ projet.titre }}</h4>
           <span class="status" [ngClass]="{

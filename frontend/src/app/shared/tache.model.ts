@@ -12,7 +12,7 @@ export interface Tache {
     priorite: string;
     projet?: Projet;
     assigne?: User;
-    predecesseurs?: Tache[];
+    predecesseursIds?: number[];
     tags?: string[];
     estimation?: number;
 } 
